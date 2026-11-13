@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "build": "2026-11-13-arm64",
+  "architecture": "arm64-v8a",
+  "apps": [
+    {
+      "id": "tmap",
+      "architecture": "arm64-v8a",
+      "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+      "apk": {
+        "filename": "tmap-c4-arm64.apk",
+        "bytes": 208661560,
+        "sha256": "32b8057c927cfa1e833deef3216895a4bfdba0eca8597346cee25bca2c17df2f"
+      },
+      "archive": {
+        "format": "zip",
+        "filename": "tmap-c4-arm64.zip",
+        "bytes": 97842768,
+        "sha256": "c55c5543e113527832ede5d98f747b1f75d481828435f7298bfe5d30dac038ff",
+        "parts": [
+          {
+            "path": "packages/tmap-c4-arm64.zip",
+            "bytes": 97842768,
+            "sha256": "c55c5543e113527832ede5d98f747b1f75d481828435f7298bfe5d30dac038ff"
+          }
+        ]
+      },
+      "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
+      "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767"
+    },
+    {
+      "id": "naver-map",
+      "architecture": "arm64-v8a",
+      "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
+      "apk": {
+        "filename": "naver-map-c4-arm64.apk",
+        "bytes": 234764994,
+        "sha256": "6bf733cf25899a8ec68dbae40bf94a6fb5679cc398828b18c00086060f2cf3e8"
+      },
+      "archive": {
+        "format": "zip",
+        "filename": "naver-map-c4-arm64.zip",
+        "bytes": 157937155,
+        "sha256": "b1718979a3f7958b7867bf344bff36d0d51d78dd2bbd3f9156fc7d2faa772a01",
+        "parts": [
+          {
+            "path": "packages/naver-map-c4-arm64.zip.part001",
+            "bytes": 83886080,
+            "sha256": "b9a555e30669e3f0bfdbe78139b4a400404a89e27bbbf2757804d35ec5646c95"
+          },
+          {
+            "path": "packages/naver-map-c4-arm64.zip.part002",
+            "bytes": 74051075,
+            "sha256": "8000c7621e5136f57c20db92109364aaac94d2da05435ee2f2add7a6b1cac397"
+          }
+        ]
+      },
+      "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
+      "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1"
+    }
+  ]
+}

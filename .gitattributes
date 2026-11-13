@@ -1,2 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Distribution archives are binary; never normalize line endings.
+*.zip -text -diff
+*.part[0-9][0-9][0-9] -text -diff
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
