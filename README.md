@@ -31,6 +31,34 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\restore-apks.ps1 -App 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\restore-apks.ps1 -VerifyOnly
 ```
 
+## 앱에서 GitHub 업데이트
+
+수정본 **2026.11.16.1 / 빌드 2026111601**부터 티맵과 네이버지도 모두 이 저장소의 `main/manifest.json`을 확인합니다. 이 기능이 없는 예전 설치본은 이번 APK를 한 번 직접 설치해야 합니다.
+
+- 앱을 화면에 열면 새 버전을 확인하며, 최근 확인 후 15분 이내에는 반복 조회하지 않습니다.
+- 종량제가 아닌 연결에서는 자동 다운로드하고, 그 외에는 다운로드 여부를 묻습니다.
+- 네이버지도의 분할 ZIP도 자동으로 합쳐 복원합니다. 파일 크기·SHA256·앱 패키지·설치본과 동일한 서명을 확인합니다.
+- 다운로드 후 **안드로이드 설치 확인 화면에서 사용자가 설치를 승인**합니다. 무인 강제 설치 방식은 아닙니다.
+- 이동 중으로 확인된 경우 업데이트 창을 미룹니다. 실제 주행 중에는 업데이트를 설치하지 마세요.
+
+### 다음 수정본 게시
+
+**APK만 GitHub에 추가하면 업데이트되지 않습니다.** 새 빌드 번호, 배포 파일, `manifest.json`을 한 커밋으로 게시해야 합니다.
+
+1. 두 APK에 포함되는 `NaviUpdater.BUILD`를 더 큰 번호로, `VERSION`을 수정 버전으로 올려 다시 빌드·서명합니다. 빌드 검증 보고서의 `update_build`도 같은 번호여야 합니다. 서명키는 기존과 동일하게 유지합니다.
+2. 검증 보고서를 사용해 아래 도구를 실행합니다. 이 도구가 압축·분할·해시 계산과 업데이트 목록 작성을 수행합니다.
+3. `restore-apks.ps1`로 복원 검사를 하고, `packages`, `manifest.json`과 변경한 문서를 함께 커밋하여 `main`에 푸시합니다.
+4. 폰에서 앱을 다시 열어 업데이트를 확인하고 설치를 승인합니다. **로컬 커밋만 한 상태에서는 폰에 배포되지 않습니다.**
+
+```powershell
+py tools/package-updates.py --checks C:/build/checks.json --version 2026.11.17.1 --notes "수정 내용"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./restore-apks.ps1
+```
+
+`--checks`는 서명·정렬·APK 내용 보존을 검증하는 `build_current.py`의 보고서입니다. 도구는 실제 APK가 보고서의 크기·SHA256과 일치하는지 검사하고, 동일 빌드 번호에 다른 APK를 게시하는 것도 거부합니다. APK 내부 빌드 번호를 도구가 자동 변경하지는 않습니다.
+
+두 앱의 기본 버전 번호와 별도로 **수정본 빌드 번호**로 업데이트를 구분합니다. 향후 원본 앱 버전이 바뀌면 수정 기능과 업데이트 코드를 새 원본에 다시 적용해 빌드해야 합니다.
+
 ## 적용 기능 및 수정사항
 
 아래 내용은 **이 저장소에 포함된 현재 APK 기준**입니다. 티맵과 네이버지도 수정본을 함께 설치해야 앱 간 연동 기능을 사용할 수 있습니다.
