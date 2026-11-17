@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.17.1-arm64",
+  "build": "2026.11.17.2-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 208669588,
-        "sha256": "aa2d1bad01782ed634a8eb3bd0fc4eb8496aeff3acde6839aca1ea4eef5c68fd"
+        "bytes": 208665708,
+        "sha256": "04553f0faf007385867542996d3f477d7378eb311de4af31bc925dcb379a0df9"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97855913,
-        "sha256": "ab8776c00ff0478629f8f36a21f06221d7ace2aed79db9b7029d4b87607ee2d7",
+        "bytes": 97858199,
+        "sha256": "a95f47ecae8ef189a6ea652a9ca6d91cc03d3b7c289a7c95821894a0b5f1503c",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97855913,
-            "sha256": "ab8776c00ff0478629f8f36a21f06221d7ace2aed79db9b7029d4b87607ee2d7"
+            "bytes": 97858199,
+            "sha256": "a95f47ecae8ef189a6ea652a9ca6d91cc03d3b7c289a7c95821894a0b5f1503c"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111701,
-      "modified_version": "2026.11.17.1",
+      "update_build": 2026111702,
+      "modified_version": "2026.11.17.2",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "kisa: GPS 수신 전 마지막 위치 기반 목적지 제안과 경로 설정"
+      "release_notes": "kisa: 업데이트 APK를 다운로드 폴더에 저장하고 완료 알림에서 직접 설치"
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234785441,
-        "sha256": "30c4483dd4bbab54eb914e54375127666586b052e7c7609305a4585bc97060b9"
+        "bytes": 234789549,
+        "sha256": "44bbe2c55a28b8b94484b967e6a579c2a22d14859e7c163111ba639cf500e7bf"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157946790,
-        "sha256": "14042de91c3bc215e20ae2d1713cb5f333f82a04069adf719e48e46a50170f67",
+        "bytes": 157948292,
+        "sha256": "45e03cd4bd5482dcdb8b10d5671883a5bbc64dc5ec09cdcba1b1878a7ec72aec",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "e9c0580a9ed10ed87fdd1de8642e0d2cd11f9bf085e15e886cdfbbda773ba9c8"
+            "sha256": "4aaa8633ea4c14a63c60a6008f5d4dcac64922dd61a3edb194a90f3e06f7e0aa"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74060710,
-            "sha256": "6843049dc4a663989121492f2be8422ec761fae2daad879ba606c27924f47431"
+            "bytes": 74062212,
+            "sha256": "4a61556727b464a28630d6086eff5f8816cc2879d5baf6f2f73842c4ff6450bc"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111701,
-      "modified_version": "2026.11.17.1",
+      "update_build": 2026111702,
+      "modified_version": "2026.11.17.2",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "kisa: GPS 수신 전 마지막 위치 기반 목적지 제안과 경로 설정"
+      "release_notes": "kisa: 업데이트 APK를 다운로드 폴더에 저장하고 완료 알림에서 직접 설치"
     }
   ],
   "auto_download_wifi": true
