@@ -16,8 +16,8 @@ import java.util.concurrent.*;
 
 /** Verified GitHub Releases self-update. Installation always uses Android's installer UI. */
 public final class NaviUpdater {
-  public static final long BUILD=2026111601L;
-  public static final String VERSION="2026.11.16.1";
+  public static final long BUILD=2026111701L;
+  public static final String VERSION="2026.11.17.1";
   private static final String INDEX="https://raw.githubusercontent.com/multikyd/navi_app/main/manifest.json";
   private static final Handler main=new Handler(Looper.getMainLooper());
   private static final ExecutorService worker=Executors.newSingleThreadExecutor(r->{Thread t=new Thread(r,"Carrot-app-update");t.setDaemon(true);return t;});

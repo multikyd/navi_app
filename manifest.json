@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.16.1-arm64",
+  "build": "2026.11.17.1-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -10,27 +10,27 @@
       "apk": {
         "filename": "tmap-c4-arm64.apk",
         "bytes": 208669588,
-        "sha256": "c66efed09e1cb9c02a561a234572257b2dbf36ea87df0743937ded2b2cc93ecf"
+        "sha256": "aa2d1bad01782ed634a8eb3bd0fc4eb8496aeff3acde6839aca1ea4eef5c68fd"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97854991,
-        "sha256": "dc2568a0346a97573e4d8fb090f7dfdc1cc399a6ea8b60fabc08ec28df551644",
+        "bytes": 97855913,
+        "sha256": "ab8776c00ff0478629f8f36a21f06221d7ace2aed79db9b7029d4b87607ee2d7",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97854991,
-            "sha256": "dc2568a0346a97573e4d8fb090f7dfdc1cc399a6ea8b60fabc08ec28df551644"
+            "bytes": 97855913,
+            "sha256": "ab8776c00ff0478629f8f36a21f06221d7ace2aed79db9b7029d4b87607ee2d7"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111601,
-      "modified_version": "2026.11.16.1",
+      "update_build": 2026111701,
+      "modified_version": "2026.11.17.1",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "티맵·네이버지도 GitHub 업데이트 확인 및 분할 다운로드, 티맵 방지턱 조회 연결 복구와 신호 진단 기록"
+      "release_notes": "kisa: GPS 수신 전 마지막 위치 기반 목적지 제안과 경로 설정"
     },
     {
       "id": "naver-map",
@@ -39,32 +39,32 @@
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
         "bytes": 234785441,
-        "sha256": "45af1744a1c0bd85eef999e14d8ecb88eaebffc7ed25ed55fb24ceb5b74e68d9"
+        "sha256": "30c4483dd4bbab54eb914e54375127666586b052e7c7609305a4585bc97060b9"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157946800,
-        "sha256": "a132c46a23a79d2f972607e65789fbb066c0b920f3520f2f8f55c8854c96fa22",
+        "bytes": 157946790,
+        "sha256": "14042de91c3bc215e20ae2d1713cb5f333f82a04069adf719e48e46a50170f67",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "d66964213c7a632c76ceea235ce157fb3b89626be6600cd355758ab636e3c1d8"
+            "sha256": "e9c0580a9ed10ed87fdd1de8642e0d2cd11f9bf085e15e886cdfbbda773ba9c8"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74060720,
-            "sha256": "376d875d35ef540647e94a53cb217f8827bab6d33fb10ae3e8753c2858dd28a9"
+            "bytes": 74060710,
+            "sha256": "6843049dc4a663989121492f2be8422ec761fae2daad879ba606c27924f47431"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111601,
-      "modified_version": "2026.11.16.1",
+      "update_build": 2026111701,
+      "modified_version": "2026.11.17.1",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "티맵·네이버지도 GitHub 업데이트 확인 및 분할 다운로드, 티맵 방지턱 조회 연결 복구와 신호 진단 기록"
+      "release_notes": "kisa: GPS 수신 전 마지막 위치 기반 목적지 제안과 경로 설정"
     }
   ],
   "auto_download_wifi": true
