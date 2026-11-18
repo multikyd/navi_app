@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.17.2-arm64",
+  "build": "2026.11.19.1-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 208665708,
-        "sha256": "04553f0faf007385867542996d3f477d7378eb311de4af31bc925dcb379a0df9"
+        "bytes": 208707176,
+        "sha256": "c5b90db72bd5a358153d9ff4f5612d77df43fcdc0df08ea92a357c453536e161"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97858199,
-        "sha256": "a95f47ecae8ef189a6ea652a9ca6d91cc03d3b7c289a7c95821894a0b5f1503c",
+        "bytes": 97873657,
+        "sha256": "4c1cd504437ec3696a8cfcb08086d144526f2e5a395040d302e92b3a35c87541",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97858199,
-            "sha256": "a95f47ecae8ef189a6ea652a9ca6d91cc03d3b7c289a7c95821894a0b5f1503c"
+            "bytes": 97873657,
+            "sha256": "4c1cd504437ec3696a8cfcb08086d144526f2e5a395040d302e92b3a35c87541"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111702,
-      "modified_version": "2026.11.17.2",
+      "update_build": 2026111901,
+      "modified_version": "2026.11.19.1",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "kisa: 업데이트 APK를 다운로드 폴더에 저장하고 완료 알림에서 직접 설치"
+      "release_notes": "kisa: 아리아 검색 자동 팝업 제거, 주행 중 네이버 검색, 안내 앱 전환 및 방향별 신호 표시 개선"
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234789549,
-        "sha256": "44bbe2c55a28b8b94484b967e6a579c2a22d14859e7c163111ba639cf500e7bf"
+        "bytes": 234814125,
+        "sha256": "ab0fb5bb8378563e6a428b686b3345e0eb699c4dfdb2adf8856fedc662ba9e7e"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157948292,
-        "sha256": "45e03cd4bd5482dcdb8b10d5671883a5bbc64dc5ec09cdcba1b1878a7ec72aec",
+        "bytes": 157961329,
+        "sha256": "f490448ab7bd1c015c0b93c617948d13478cf3a0efe49466bd57a224d03a9d72",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "4aaa8633ea4c14a63c60a6008f5d4dcac64922dd61a3edb194a90f3e06f7e0aa"
+            "sha256": "56e61600a7b2d37b5f9f052f06f90f08cc10357de2ba7851613bfd7fc49970db"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74062212,
-            "sha256": "4a61556727b464a28630d6086eff5f8816cc2879d5baf6f2f73842c4ff6450bc"
+            "bytes": 74075249,
+            "sha256": "808a41f4196ef6a1cba2cef65a0556f2d53758cd3764c05497dff407aaf75943"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111702,
-      "modified_version": "2026.11.17.2",
+      "update_build": 2026111901,
+      "modified_version": "2026.11.19.1",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "kisa: 업데이트 APK를 다운로드 폴더에 저장하고 완료 알림에서 직접 설치"
+      "release_notes": "kisa: 아리아 검색 자동 팝업 제거, 주행 중 네이버 검색, 안내 앱 전환 및 방향별 신호 표시 개선"
     }
   ],
   "auto_download_wifi": true
