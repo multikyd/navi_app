@@ -16,8 +16,8 @@ import java.util.concurrent.*;
 
 /** Verified GitHub update download. The user installs the saved Downloads APK. */
 public final class NaviUpdater {
-  public static final long BUILD=2026111702L;
-  public static final String VERSION="2026.11.17.2";
+  public static final long BUILD=2026111901L;
+  public static final String VERSION="2026.11.19.1";
   private static final String INDEX="https://raw.githubusercontent.com/multikyd/navi_app/main/manifest.json";
   private static final Handler main=new Handler(Looper.getMainLooper());
   private static final ExecutorService worker=Executors.newSingleThreadExecutor(r->{Thread t=new Thread(r,"Kisa-app-update");t.setDaemon(true);return t;});
