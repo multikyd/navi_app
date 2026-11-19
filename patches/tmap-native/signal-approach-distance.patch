@@ -1,0 +1,8 @@
+--- a/com/tmapmobility/tmap/sdk/cits/CITSRepository.smali
++++ b/com/tmapmobility/tmap/sdk/cits/CITSRepository.smali
+@@ -2730 +2730 @@
+-    const/16 v14, 0xc8
++    const/16 v14, 0x12c
+@@ -6202 +6202 @@
+-    const/16 v6, 0xc8
++    const/16 v6, 0x190
