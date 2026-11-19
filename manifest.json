@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.19.1-arm64",
+  "build": "2026.11.19.2-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 208707176,
-        "sha256": "c5b90db72bd5a358153d9ff4f5612d77df43fcdc0df08ea92a357c453536e161"
+        "bytes": 208705648,
+        "sha256": "327469e6a3cc2c08ca8c36a1159175c39dda989e63ac7da2b1766ebcb2b2c72a"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97873657,
-        "sha256": "4c1cd504437ec3696a8cfcb08086d144526f2e5a395040d302e92b3a35c87541",
+        "bytes": 97875488,
+        "sha256": "3ff32c31a978cd5ba0362e4f5687af95795300e3c96032f2c955d4c1096f023c",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97873657,
-            "sha256": "4c1cd504437ec3696a8cfcb08086d144526f2e5a395040d302e92b3a35c87541"
+            "bytes": 97875488,
+            "sha256": "3ff32c31a978cd5ba0362e4f5687af95795300e3c96032f2c955d4c1096f023c"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111901,
-      "modified_version": "2026.11.19.1",
+      "update_build": 2026111902,
+      "modified_version": "2026.11.19.2",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "kisa: 아리아 검색 자동 팝업 제거, 주행 중 네이버 검색, 안내 앱 전환 및 방향별 신호 표시 개선"
+      "release_notes": "kisa: 네이버 화면 종료 오류 수정, 아리아 정확한 네이버 장소 우선 추천 및 선택 좌표 음성 확정"
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234814125,
-        "sha256": "ab0fb5bb8378563e6a428b686b3345e0eb699c4dfdb2adf8856fedc662ba9e7e"
+        "bytes": 234818221,
+        "sha256": "9704991c0cd0b968a3fbe63d52f1fd3f36f84a73725c37bab7407f949ecf99b3"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157961329,
-        "sha256": "f490448ab7bd1c015c0b93c617948d13478cf3a0efe49466bd57a224d03a9d72",
+        "bytes": 157962036,
+        "sha256": "81d92f82e709f99cd80209e7b47a261e72991bd85befd8b1db3168c8d796993c",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "56e61600a7b2d37b5f9f052f06f90f08cc10357de2ba7851613bfd7fc49970db"
+            "sha256": "e889b1f7bcbf8883630896ed47d21b7ed03854c58f9f6399cf2a01e2e32bea6e"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74075249,
-            "sha256": "808a41f4196ef6a1cba2cef65a0556f2d53758cd3764c05497dff407aaf75943"
+            "bytes": 74075956,
+            "sha256": "13f3e8f61ecbe6de80f9ac8c2c23457480f80866ed4302195eb141a7bcc428e5"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111901,
-      "modified_version": "2026.11.19.1",
+      "update_build": 2026111902,
+      "modified_version": "2026.11.19.2",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "kisa: 아리아 검색 자동 팝업 제거, 주행 중 네이버 검색, 안내 앱 전환 및 방향별 신호 표시 개선"
+      "release_notes": "kisa: 네이버 화면 종료 오류 수정, 아리아 정확한 네이버 장소 우선 추천 및 선택 좌표 음성 확정"
     }
   ],
   "auto_download_wifi": true
