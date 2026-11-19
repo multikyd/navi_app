@@ -28,7 +28,6 @@ public final class NaverBridge {
   private static volatile long pointAt;
   private static volatile JSONObject latest;
   private static volatile CharSequence panelText="";
-  private static volatile boolean panelHasSignal;
   private static volatile boolean simulation;
   private static volatile boolean showPanel=true;
   private static final Map<String,Peer> peers=new ConcurrentHashMap<>();
@@ -201,7 +200,6 @@ public final class NaverBridge {
         if(display.length()>0)display.append('\n');
         display.append(signalRows);
       }
-      panelHasSignal=signalRows.length()>0;
       panelText=new android.text.SpannedString(display);
       main.post(()->updatePanel());
       if(++packetNumber%10==0)Log.i(TAG,"mode="+name(call(s,"getMode"))+" peers="+peers.size()+" sdi="+rg.optInt("nSdiType")+" signal="+signals.optInt("distance"));
@@ -296,8 +294,7 @@ public final class NaverBridge {
       FrameLayout.LayoutParams lp=(FrameLayout.LayoutParams)p.getLayoutParams();
       for(String id:new String[]{"v_second","v_first_bg"}){int resource=com.carrot.transport.GuidancePlacement.id((View)p.getParent(),id);View anchor=resource==0?null:a.findViewById(resource);
         if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0){int[] location=new int[2],container=new int[2];anchor.getLocationOnScreen(location);((View)p.getParent()).getLocationOnScreen(container);lp.topMargin=Math.max(dp(a,12),location[1]+anchor.getHeight()-container[1]+dp(a,8));p.setLayoutParams(lp);break;}}
-      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));boolean reserve=panelHasSignal&&com.carrot.transport.GuidancePlacement.nativeSignal(root)!=null;
-        float gap=reserve?(p.getMeasuredHeight()+dp(a,16))/a.getResources().getDisplayMetrics().density:0;
+      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));float gap=(p.getMeasuredHeight()+dp(a,16))/a.getResources().getDisplayMetrics().density;
         SignalLayoutGap.setHeight(gap);
         com.carrot.transport.GuidancePlacement.place(root,p,true);
       }else SignalLayoutGap.setHeight(0);

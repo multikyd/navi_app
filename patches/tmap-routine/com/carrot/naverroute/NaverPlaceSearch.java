@@ -91,7 +91,29 @@ public final class NaverPlaceSearch {
   Intent intent=new Intent();intent.setClassName(c.getPackageName(),"com.skt.tmap.activity.TmapRoutePreviewActivity");intent.putExtra("destination",(Serializable)data);intent.putExtra("start_from_current_location",true);intent.putExtra("keep_viadata",false);return intent;
  }
  public static void show(Activity a,String query){if(!a.isFinishing()&&!a.isDestroyed())new Panel(a,query).open();}
- public static void showVoice(Activity a,String query){if(a.isFinishing()||a.isDestroyed())return;Panel p=new Panel(a,query);if(searchCenter(a,false)==null&&searchCenter(a,true)!=null){p.myLocation=true;p.position.setText("내 위치 중심 ▾");}p.open();}
+ static final String ARIA_QUERY="com.kisa.navi.ARIA_NAVER_QUERY";
+ /** Opens in the search activity, whose lifetime is independent of Aria's candidate window. */
+ public static void openAriaSearch(Activity owner){
+  Intent intent=owner.getIntent();
+  if(intent==null||!intent.hasExtra(ARIA_QUERY))return;
+  String query=intent.getStringExtra(ARIA_QUERY);
+  MAIN.post(()->{
+   if(owner.isFinishing()||owner.isDestroyed())return;
+   try{
+    Panel panel=new Panel(owner,query==null?"":query);
+    panel.closeHostOnDismiss=true;
+    if(searchCenter(owner,false)==null&&searchCenter(owner,true)!=null){
+     panel.myLocation=true;
+     panel.position.setText("내 위치 중심 ▾");
+    }
+    panel.open();
+   }catch(RuntimeException error){
+    RouteDiagnostics.event("aria_naver_place_open_failed",error.getClass().getSimpleName());
+    owner.finish();
+   }
+  });
+ }
+
  static JSONArray exactFirst(String query,JSONArray found)throws JSONException{ArrayList<JSONObject> values=new ArrayList<>();for(int i=0;i<found.length();i++)values.add(found.getJSONObject(i));values.sort((a,b)->{boolean ae=PlaceMatch.exact(query,a.optString("name")),be=PlaceMatch.exact(query,b.optString("name"));if(ae!=be)return ae?-1:1;return ae?Double.compare(a.optDouble("distance_m",Double.MAX_VALUE),b.optDouble("distance_m",Double.MAX_VALUE)):0;});JSONArray result=new JSONArray();for(JSONObject value:values)result.put(value);return result;}
  static final class Palette {
   final boolean dark;final int background,surface,text,secondary,blue,line;
@@ -100,7 +122,7 @@ public final class NaverPlaceSearch {
  static GradientDrawable background(int color,int stroke,int radius,Context c){GradientDrawable b=new GradientDrawable();b.setColor(color);b.setCornerRadius(dp(c,radius));if(stroke!=0)b.setStroke(dp(c,1),stroke);return b;}
  static String distanceText(double meters){if(meters<1000)return Math.round(meters)+"m";return meters<10000?String.format(Locale.KOREA,"%.1fkm",meters/1000):Math.round(meters/1000)+"km";}
  static final class Panel {
-  final Activity a;final Dialog dialog;final EditText input;final TextView status,scope,position,sort,close;final LinearLayout body,bar,rows;Palette palette;Request request;int generation;boolean myLocation=false,distanceSort=false;JSONArray lastResults=new JSONArray();
+  final Activity a;final Dialog dialog;final EditText input;final TextView status,scope,position,sort,close;final LinearLayout body,bar,rows;Palette palette;Request request;int generation;boolean myLocation=false,distanceSort=false,closeHostOnDismiss;JSONArray lastResults=new JSONArray();
   Panel(Activity activity,String query){
    a=activity;palette=new Palette(a);dialog=new Dialog(a);dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
    body=new LinearLayout(a){@Override protected void onConfigurationChanged(Configuration config){super.onConfigurationChanged(config);retheme();}};body.setOrientation(1);body.setPadding(dp(a,18),dp(a,16),dp(a,18),dp(a,12));
@@ -112,12 +134,12 @@ public final class NaverPlaceSearch {
    View divider=new View(a);divider.setTag("separator");body.addView(divider,new LinearLayout.LayoutParams(-1,dp(a,1)));
    LinearLayout options=new LinearLayout(a);options.setGravity(Gravity.CENTER_VERTICAL);position=text("현재 지도 중심 ▾",14);position.setTypeface(Typeface.create("sans-serif-medium",0));position.setPadding(0,0,dp(a,20),0);position.setOnClickListener(v->choosePosition());position.setTag("naver-place-position");sort=text("관련도순 ▾",14);sort.setTypeface(Typeface.create("sans-serif-medium",0));sort.setOnClickListener(v->chooseSort());sort.setTag("naver-place-sort");options.addView(position,new LinearLayout.LayoutParams(-2,dp(a,48)));options.addView(sort,new LinearLayout.LayoutParams(-2,dp(a,48)));body.addView(options);
    status=text("네이버 장소 검색",12);status.setPadding(0,0,0,dp(a,10));body.addView(status);ScrollView scroll=new ScrollView(a);scroll.setFillViewport(false);rows=new LinearLayout(a);rows.setOrientation(1);scroll.addView(rows);body.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
-   dialog.setContentView(body);dialog.setOnDismissListener(d->{generation++;if(request!=null)request.cancel();if(VoicePlaceBridge.voicePanel==this)VoicePlaceBridge.voicePanel=null;});input.setOnEditorActionListener((v,id,event)->{if(id==3){search();return true;}return false;});retheme();
+   dialog.setContentView(body);dialog.setOnDismissListener(d->{generation++;if(request!=null)request.cancel();if(closeHostOnDismiss&&!a.isFinishing())a.finish();});input.setOnEditorActionListener((v,id,event)->{if(id==3){search();return true;}return false;});retheme();
   }
   TextView text(String s,int size){TextView t=new TextView(a);t.setText(s);t.setTextSize(size);t.setTypeface(Typeface.create("sans-serif",Typeface.NORMAL));t.setTextColor(palette.text);t.setIncludeFontPadding(false);return t;}
   void retheme(){palette=new Palette(a);body.setBackground(background(palette.background,0,20,a));bar.setBackground(background(palette.surface,0,26,a));input.setTextColor(palette.text);input.setHintTextColor(palette.secondary);close.setTextColor(palette.text);scope.setTextColor(palette.blue);position.setTextColor(palette.text);sort.setTextColor(palette.text);status.setTextColor(palette.secondary);((TextView)bar.getChildAt(1)).setTextColor(palette.blue);View divider=body.findViewWithTag("separator");if(divider!=null)divider.setBackgroundColor(palette.line);rows.removeAllViews();for(int i=0;i<lastResults.length();i++)try{add(lastResults.getJSONObject(i));}catch(JSONException ignored){} }
   void open(){dialog.show();Window w=dialog.getWindow();if(w!=null){w.setBackgroundDrawableResource(android.R.color.transparent);w.setLayout((int)(a.getResources().getDisplayMetrics().widthPixels*.96),(int)(a.getResources().getDisplayMetrics().heightPixels*.78));w.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);}if(!input.getText().toString().trim().isEmpty())search();}
-  void openResults(JSONArray found){String query=input.getText().toString();input.setText("");open();input.setText(query);lastResults=found;status.setText("말씀하신 장소 · 네이버 검색 결과 "+found.length()+"곳");for(int i=0;i<found.length();i++)try{add(found.getJSONObject(i));}catch(JSONException ignored){}}
+
   void choices(String title,String[] values,int selected,java.util.function.IntConsumer changed){ArrayAdapter<String> adapter=new ArrayAdapter<String>(a,android.R.layout.simple_list_item_single_choice,values){@Override public View getView(int i,View recycled,ViewGroup parent){CheckedTextView view=(CheckedTextView)super.getView(i,recycled,parent);view.setTextColor(palette.text);view.setTextSize(16);view.setBackgroundColor(palette.background);view.setCheckMarkTintList(ColorStateList.valueOf(palette.blue));return view;}};AlertDialog picker=new AlertDialog.Builder(a).setTitle(title).setSingleChoiceItems(adapter,selected,(d,index)->{d.dismiss();changed.accept(index);}).setNegativeButton("취소",null).create();picker.show();}
   void choosePosition(){choices("검색 위치 설정",new String[]{"현재 지도 중심","내 위치 중심"},myLocation?1:0,index->{myLocation=index==1;position.setText((myLocation?"내 위치 중심":"현재 지도 중심")+" ▾");if(!input.getText().toString().trim().isEmpty())search();});}
   void chooseSort(){choices("정렬 기준",new String[]{"관련도순","거리순"},distanceSort?1:0,index->{distanceSort=index==1;sort.setText((distanceSort?"거리순":"관련도순")+" ▾");if(!input.getText().toString().trim().isEmpty())search();});}
@@ -129,7 +151,7 @@ public final class NaverPlaceSearch {
    String distance=place.has("distance_m")?distanceText(place.optDouble("distance_m",0)):"",address=place.optString("address","");TextView detail=text(distance+(distance.isEmpty()?"":" · ")+address,14);detail.setTextColor(palette.secondary);detail.setPadding(0,dp(a,8),0,dp(a,15));if(!distance.isEmpty()){SpannableString line=new SpannableString(detail.getText());line.setSpan(new ForegroundColorSpan(palette.text),0,distance.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);line.setSpan(new StyleSpan(Typeface.BOLD),0,distance.length(),Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);detail.setText(line);}row.addView(detail);
    TextView route=text("↱ 길찾기",14);route.setGravity(Gravity.CENTER);route.setPadding(dp(a,14),dp(a,8),dp(a,14),dp(a,8));route.setBackground(background(palette.background,palette.line,22,a));route.setOnClickListener(v->confirm(place));row.addView(route,new LinearLayout.LayoutParams(-2,dp(a,36)));rows.addView(row);View line=new View(a);line.setBackgroundColor(palette.line);rows.addView(line,new LinearLayout.LayoutParams(-1,dp(a,1)));
   }
-  void confirm(JSONObject place){if(VoicePlaceBridge.voicePanel==this){VoicePlaceBridge.selectForVoice(this,place);return;}try{new AlertDialog.Builder(a).setTitle(place.getString("name")).setMessage(place.optString("address")+"\n\n이 장소를 티맵 목적지로 선택할까요?").setNegativeButton("취소",null).setPositiveButton("목적지로 선택",(d,which)->{try{Intent intent=destinationIntent(a,place);dialog.dismiss();a.startActivity(intent);RouteDiagnostics.event("naver_place_selected","coordinate_destination=true");}catch(Exception e){Toast.makeText(a,"목적지를 적용하지 못했습니다.",Toast.LENGTH_LONG).show();}}).show();}catch(JSONException ignored){}}
+  void confirm(JSONObject place){try{new AlertDialog.Builder(a).setTitle(place.getString("name")).setMessage(place.optString("address")+"\n\n이 장소를 티맵 목적지로 선택할까요?").setNegativeButton("취소",null).setPositiveButton("목적지로 선택",(d,which)->{try{Intent intent=destinationIntent(a,place);a.startActivity(intent);dialog.dismiss();RouteDiagnostics.event("naver_place_selected","coordinate_destination=true");}catch(Exception e){Toast.makeText(a,"목적지를 적용하지 못했습니다.",Toast.LENGTH_LONG).show();}}).show();}catch(JSONException ignored){}}
  }
  private NaverPlaceSearch(){}
 }

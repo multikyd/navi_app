@@ -1,0 +1,30 @@
+--- a/com/naver/map/feature/navigation/renewal/rg/compose/NaviRouteGuidanceScreenKt.smali
++++ b/com/naver/map/feature/navigation/renewal/rg/compose/NaviRouteGuidanceScreenKt.smali
+@@ -136,3 +136,9 @@
+-    const/4 v7, 0x2
+-
+-    const/4 v3, 0x0
++    const/4 v7, 0x0
++
++    sget-object v3, Landroidx/compose/ui/Modifier;->g3:Landroidx/compose/ui/Modifier$Companion;
++
++    const-string v4, "kisa_native_traffic_signal"
++
++    invoke-static {v3, v4}, Landroidx/compose/ui/platform/TestTagKt;->a(Landroidx/compose/ui/Modifier;Ljava/lang/String;)Landroidx/compose/ui/Modifier;
++
++    move-result-object v3
+--- a/com/naver/map/feature/navigation/renewal/rg/compose/NaviSafeDrivingScreenKt.smali
++++ b/com/naver/map/feature/navigation/renewal/rg/compose/NaviSafeDrivingScreenKt.smali
+@@ -4595,3 +4595,9 @@
+-    const/4 v7, 0x2
+-
+-    const/4 v3, 0x0
++    const/4 v7, 0x0
++
++    sget-object v3, Landroidx/compose/ui/Modifier;->g3:Landroidx/compose/ui/Modifier$Companion;
++
++    const-string v4, "kisa_native_traffic_signal"
++
++    invoke-static {v3, v4}, Landroidx/compose/ui/platform/TestTagKt;->a(Landroidx/compose/ui/Modifier;Ljava/lang/String;)Landroidx/compose/ui/Modifier;
++
++    move-result-object v3

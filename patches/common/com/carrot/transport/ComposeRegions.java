@@ -10,6 +10,13 @@ public final class ComposeRegions {
  static void walk(View v,List<Region> result,int[] origin){if(!v.isShown())return;if(v.getClass().getName().equals("androidx.compose.ui.platform.AndroidComposeView"))try{Object owner=call(v,"getSemanticsOwner");node(call(owner,"d"),v,result,new HashSet<>(),origin);}catch(Throwable failure){if(failure instanceof VirtualMachineError)throw (VirtualMachineError)failure;if(failure instanceof ThreadDeath)throw (ThreadDeath)failure;}if(v instanceof ViewGroup)for(int i=0;i<((ViewGroup)v).getChildCount();i++)walk(((ViewGroup)v).getChildAt(i),result,origin);}
  public static List<Region> get(View root){if(!root.getContext().getPackageName().equals("com.nhn.android.nmap"))return Collections.emptyList();long now=SystemClock.elapsedRealtime();if(cachedRoot==root&&now-cachedAt<700)return cached;List<Region> result=new ArrayList<>();int[] origin=new int[2];root.getLocationOnScreen(origin);walk(root,result,origin);cachedRoot=root;cachedAt=now;cached=result;return result;}
  public static boolean search(View root){for(Region r:get(root))if(r.description.contains("EditableText")&&r.bounds.width()>0)return true;return false;}
- public static Rect signal(View root){Rect found=null;for(Region r:get(root)){String d=r.description.toLowerCase(Locale.ROOT);boolean signal=(d.contains("trafficlight")||d.contains("trafficsignal")||d.contains("신호등")||d.contains("신호 정보")||d.matches("(?s).*\\d+\\s*초.*"));if(!signal||d.contains("카메라")||d.contains("단속")||r.bounds.width()>root.getWidth()*.75||r.bounds.height()>root.getHeight()*.25)continue;if(found==null)found=new Rect(r.bounds);else found.union(r.bounds);}return found;}
+ public static Rect signal(View root){
+  for(Region region:get(root)){
+   if(region.description.contains("kisa_native_traffic_signal")&&region.bounds.height()>0
+       &&region.bounds.width()<root.getWidth()*.75&&region.bounds.height()<root.getHeight()*.25){
+    return new Rect(region.bounds);
+   }
+  }
+  Rect found=null;for(Region r:get(root)){String d=r.description.toLowerCase(Locale.ROOT);boolean signal=(d.contains("trafficlight")||d.contains("trafficsignal")||d.contains("신호등")||d.contains("신호 정보")||d.matches("(?s).*\\d+\\s*초.*"));if(!signal||d.contains("카메라")||d.contains("단속")||r.bounds.width()>root.getWidth()*.75||r.bounds.height()>root.getHeight()*.25)continue;if(found==null)found=new Rect(r.bounds);else found.union(r.bounds);}return found;}
  private ComposeRegions(){}
 }

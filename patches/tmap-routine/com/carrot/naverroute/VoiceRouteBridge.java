@@ -11,7 +11,6 @@ public final class VoiceRouteBridge {
  public static boolean intercept(Object callback,Object route){
   if(replaying.get()==callback)return false;
   if(callback==null||route==null)return false;
-  if(VoicePlaceBridge.blocksNativeRoute()){notifyCancelled(callback);RouteDiagnostics.event("voice_native_route_cancelled","naver_exact_confirmation_owns_selection=true");return true;}
   try{Object handler=RouteRequest.field(callback.getClass(),"a").get(callback);Context c=(Context)RouteRequest.field(handler.getClass(),"a").get(handler);if(c==null)return false;
    synchronized(seen){if(seen.containsKey(callback))return true;seen.put(callback,false);}
    long generation=sequence.incrementAndGet();RouteRequest.MAIN.post(()->begin(callback,route,c.getApplicationContext(),generation));return true;

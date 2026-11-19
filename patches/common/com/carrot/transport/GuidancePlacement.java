@@ -6,6 +6,17 @@ public final class GuidancePlacement {
  public static int id(View root,String name){for(String pkg:new String[]{root.getContext().getPackageName(),"com.naver.map","com.skt.tmap.ku"}){int found=root.getResources().getIdentifier(name,"id",pkg);if(found!=0)return found;}return 0;}
  public static Rect nativeSignal(View root){int[] origin=new int[2];root.getLocationOnScreen(origin);for(String name:new String[]{"traffic_signal_view","v_traffic_light","v_traffic_signal","v_signal_info"}){int id=id(root,name);View v=id==0?null:root.findViewById(id);if(v!=null&&v.isShown()&&v.getWidth()>0&&v.getHeight()>0&&v.getHeight()<root.getHeight()/3){int[] at=new int[2];v.getLocationOnScreen(at);return new Rect(at[0]-origin[0],at[1]-origin[1],at[0]-origin[0]+v.getWidth(),at[1]-origin[1]+v.getHeight());}}return ComposeRegions.signal(root);}
  static boolean free(Rect candidate,List<Rect> occupied,int width,int height,int gap){if(candidate.left<gap||candidate.right>width-gap||candidate.top<gap||candidate.bottom>height-gap)return false;for(Rect r:occupied)if(Rect.intersects(candidate,r))return false;return true;}
+ static Integer naverSearchCenter(View root){
+  Rect best=null;
+  for(ComposeRegions.Region region:ComposeRegions.get(root)){
+   Rect bounds=region.bounds;
+   if(bounds.width()>dp(root,88)||bounds.height()>dp(root,88)
+       ||bounds.centerX()<root.getWidth()*.75
+       ||!region.description.matches("(?s).*\\s검색(?:\\s|$).*"))continue;
+   if(best==null||bounds.top<best.top)best=bounds;
+  }
+  return best==null?null:best.centerX();
+ }
  static void position(View extra,int x,int y){FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)extra.getLayoutParams();if(p.gravity!=(Gravity.TOP|Gravity.LEFT)||p.leftMargin!=x||p.topMargin!=y){p.gravity=Gravity.TOP|Gravity.LEFT;p.leftMargin=x;p.topMargin=y;extra.setLayoutParams(p);}}
  static void obstacles(View v,View extra,List<Rect> out,int[] origin){if(v==extra||!v.isShown())return;String id="";try{id=v.getResources().getResourceEntryName(v.getId()).toLowerCase(Locale.ROOT);}catch(Exception ignored){}
   boolean protectedName=id.matches(".*(speed|traffic|signal|lane|tbt|first_bg|second|guide_distance|turn|crossroad|safety|camera|limit_sign).*"),added=v.getTag()!=null&&String.valueOf(v.getTag()).matches(".*(signal|guidance-switch|naver-place).*"),leaf=!(v instanceof ViewGroup);
@@ -29,23 +40,16 @@ public final class GuidancePlacement {
      Rect below=new Rect(x,top,x+w,top+h);
      if(free(below,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,below.left,below.top);return;}
     }
-    // Move down past the speed and warning area when the close placement is occupied.
-    int lower=top;
-    for(Rect obstacle:occupied){
-     if(obstacle.bottom>top&&obstacle.top<top+dp(root,220)
-         &&obstacle.right>preferred&&obstacle.left<preferred+w){
-      lower=Math.max(lower,obstacle.bottom+gap);
-     }
-    }
-    Rect underWarnings=new Rect(preferred,lower,preferred+w,lower+h);
-    if(free(underWarnings,occupied,root.getWidth(),root.getHeight()-dp(root,130),gap)){
-     position(extra,underWarnings.left,underWarnings.top);
-     return;
-    }
+    extra.setVisibility(View.GONE);
+    return;
    }
-   for(int x:new int[]{root.getWidth()-w-gap,anchor.right+gap}){if(x<anchor.right+gap)continue;Rect candidate=new Rect(x,anchor.top,x+w,anchor.top+h);if(free(candidate,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,candidate.left,candidate.top);return;}}}left=false;}
+   for(int x:new int[]{root.getWidth()-w-gap,anchor.right+gap}){if(x<anchor.right+gap)continue;Rect candidate=new Rect(x,anchor.top,x+w,anchor.top+h);if(free(candidate,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,candidate.left,candidate.top);return;}}}left="kisa-naver-signal".equals(extra.getTag());}
   if(String.valueOf(extra.getTag()).contains("signal")){first=dp(root,180);for(int id:new int[]{id(root,"v_second"),id(root,"v_first_bg"),0x7f0a0fb0,0x7f0a06ce}){View anchor=id==0?null:root.findViewById(id);if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0&&anchor.getHeight()<root.getHeight()/2){int[] pos=new int[2];anchor.getLocationOnScreen(pos);first=pos[1]+anchor.getHeight()-origin[1]+gap;break;}}}
-  for(int side=0;side<2;side++){boolean atLeft=side==0?left:!left;int x=atLeft?gap:root.getWidth()-w-gap;if(!atLeft&&"kisa-guidance-switch".equals(extra.getTag())){int searchId=id(root,"search_button");View search=searchId==0?null:root.findViewById(searchId);if(search!=null&&search.isShown()){int[] at=new int[2];search.getLocationOnScreen(at);x=at[0]-origin[0]+(search.getWidth()-w)/2;}}for(int y=first;y+h<root.getHeight()-dp(root,130);y+=dp(root,24)){Rect r=new Rect(x,y,x+w,y+h);boolean free=x>=gap;for(Rect obstacle:occupied)if(Rect.intersects(r,obstacle)){free=false;break;}if(free){FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)extra.getLayoutParams();if(p.gravity!=(Gravity.TOP|Gravity.LEFT)||p.leftMargin!=x||p.topMargin!=y){p.gravity=Gravity.TOP|Gravity.LEFT;p.leftMargin=x;p.topMargin=y;extra.setLayoutParams(p);}return;}}}
+  int sides="kisa-naver-signal".equals(extra.getTag())?1:2;
+  for(int side=0;side<sides;side++){boolean atLeft=side==0?left:!left;int x=atLeft?gap:root.getWidth()-w-gap;if(!atLeft&&"kisa-guidance-switch".equals(extra.getTag())){int searchId=id(root,"search_button");View search=searchId==0?null:root.findViewById(searchId);if(search!=null&&search.isShown()){int[] at=new int[2];search.getLocationOnScreen(at);x=at[0]-origin[0]+(search.getWidth()-w)/2;}else if(root.getContext().getPackageName().equals("com.nhn.android.nmap")){
+   Integer center=naverSearchCenter(root);
+   if(center!=null)x=Math.min(root.getWidth()-w,Math.max(gap,center-w/2));
+  }}for(int y=first;y+h<root.getHeight()-dp(root,130);y+=dp(root,24)){Rect r=new Rect(x,y,x+w,y+h);boolean free=x>=gap;for(Rect obstacle:occupied)if(Rect.intersects(r,obstacle)){free=false;break;}if(free){FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)extra.getLayoutParams();if(p.gravity!=(Gravity.TOP|Gravity.LEFT)||p.leftMargin!=x||p.topMargin!=y){p.gravity=Gravity.TOP|Gravity.LEFT;p.leftMargin=x;p.topMargin=y;extra.setLayoutParams(p);}return;}}}
   extra.setVisibility(View.GONE);
  }
  private GuidancePlacement(){}

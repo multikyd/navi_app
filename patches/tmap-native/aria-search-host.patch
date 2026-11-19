@@ -1,0 +1,5 @@
+--- a/com/skt/tmap/activity/TmapHybridSearchActivity.smali
++++ b/com/skt/tmap/activity/TmapHybridSearchActivity.smali
+@@ -380,0 +381,2 @@
++    invoke-static/range {p0 .. p0}, Lcom/carrot/naverroute/NaverPlaceSearch;->openAriaSearch(Landroid/app/Activity;)V
++
