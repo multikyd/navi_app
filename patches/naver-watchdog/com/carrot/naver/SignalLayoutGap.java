@@ -1,6 +1,9 @@
 package com.carrot.naver;
 
+import android.content.Context;
 import android.util.Log;
+import android.util.TypedValue;
+import android.widget.TextView;
 import java.lang.reflect.Method;
 
 /** Adds space above Naver's native safety group via its Compose slot padding. */
@@ -8,7 +11,7 @@ public final class SignalLayoutGap {
   private static Object state;
   private static Method read, write, padding, copyPadding, copySlot;
   private static Method[] slotFields, paddingFields;
-  private static float gap;
+  private static float gap = 164;
   private static boolean unavailable;
 
   private static void bind(Class<?> slot) throws ReflectiveOperationException {
@@ -49,15 +52,28 @@ public final class SignalLayoutGap {
     }
   }
 
-  static void setHeight(float dp) {
-    if (dp == gap || unavailable) return;
+  static void configure(Context context) {
+    TextView lines = new TextView(context);
+    lines.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+    // Bump distance, signal distance and up to four vehicle movements.
+    lines.setText("방지턱 80m\n신호 194m\n↑ ● 17초\n← ● 8초\n→ ● 8초\n↶ ● 8초");
+    int unrestricted = android.view.View.MeasureSpec.makeMeasureSpec(0, android.view.View.MeasureSpec.UNSPECIFIED);
+    lines.measure(unrestricted, unrestricted);
+    float density = context.getResources().getDisplayMetrics().density;
+    setHeight((float) Math.ceil(lines.getMeasuredHeight() / density) + 40);
+  }
+
+  static boolean setHeight(float dp) {
+    if (dp == gap || unavailable) return false;
     gap = dp;
-    if (state == null) return;
+    if (state == null) return true;
     try {
       write.invoke(state, dp);
+      return true;
     } catch (ReflectiveOperationException | RuntimeException error) {
       unavailable = true;
       Log.w("KisaSignalLayout", "Could not update safety slot gap", error);
+      return false;
     }
   }
 

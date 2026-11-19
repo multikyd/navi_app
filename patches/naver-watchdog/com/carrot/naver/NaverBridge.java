@@ -54,7 +54,7 @@ public final class NaverBridge {
         if(!cfg.exists()) Files.write(cfg.toPath(),"{\"version\":1,\"show_panel\":true,\"targets\":[]}".getBytes(StandardCharsets.UTF_8));
       }
       app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks(){
-        public void onActivityResumed(Activity a){CompanionMode.intent(a);activity=new WeakReference<>(a);RecordingWatchdog.resumed(a);}
+        public void onActivityResumed(Activity a){CompanionMode.intent(a);activity=new WeakReference<>(a);SignalLayoutGap.configure(a);RecordingWatchdog.resumed(a);}
         public void onActivityPaused(Activity a){RecordingWatchdog.paused(a);if(activity.get()==a){activity.clear();TextView p=panel.get();if(p!=null)p.setVisibility(View.GONE);}}
         public void onActivityCreated(Activity a,Bundle b){CompanionMode.intent(a);}
         public void onActivityStarted(Activity a){}
@@ -281,7 +281,7 @@ public final class NaverBridge {
     }catch(Throwable ignored){peer.queue.clear();try{Thread.sleep(1500);}catch(InterruptedException stop){return;}}}
   }
   private static void updatePanel(){
-    try{Activity a=activity.get();if(a==null||a.isFinishing()){SignalLayoutGap.setHeight(0);return;}
+    try{Activity a=activity.get();if(a==null||a.isFinishing())return;
       TextView p=panel.get();if(p==null||p.getContext()!=a){
         if(p!=null&&p.getParent() instanceof ViewGroup)((ViewGroup)p.getParent()).removeView(p);
         p=new TextView(a);p.setTag("kisa-naver-signal");p.setTextSize(16);p.setTextColor(Color.WHITE);p.setPadding(dp(a,10),dp(a,8),dp(a,10),dp(a,8));
@@ -290,14 +290,19 @@ public final class NaverBridge {
         FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT,Gravity.TOP|Gravity.START);lp.leftMargin=dp(a,12);lp.topMargin=dp(a,210);
         content.addView(p,lp);panel=new WeakReference<>(p);
       }
-      CharSequence text=panelText;p.setText(text);p.setTextColor(Color.WHITE);p.setVisibility(!CompanionMode.background()&&showPanel&&text.length()>0?View.VISIBLE:View.GONE);p.bringToFront();
-      FrameLayout.LayoutParams lp=(FrameLayout.LayoutParams)p.getLayoutParams();
-      for(String id:new String[]{"v_second","v_first_bg"}){int resource=com.carrot.transport.GuidancePlacement.id((View)p.getParent(),id);View anchor=resource==0?null:a.findViewById(resource);
-        if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0){int[] location=new int[2],container=new int[2];anchor.getLocationOnScreen(location);((View)p.getParent()).getLocationOnScreen(container);lp.topMargin=Math.max(dp(a,12),location[1]+anchor.getHeight()-container[1]+dp(a,8));p.setLayoutParams(lp);break;}}
-      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));float gap=(p.getMeasuredHeight()+dp(a,16))/a.getResources().getDisplayMetrics().density;
-        SignalLayoutGap.setHeight(gap);
+      CharSequence text=panelText;boolean appeared=p.getText().length()==0&&text.length()>0;
+      p.setText(text);p.setTextColor(Color.WHITE);p.setVisibility(!CompanionMode.background()&&showPanel&&text.length()>0?View.VISIBLE:View.GONE);p.bringToFront();
+      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));
+        if(appeared){
+          // The native signal can enter the Compose layout on the next frame.
+          main.postDelayed(()->{
+            if(activity.get()!=a||a.isFinishing())return;
+            com.carrot.transport.ComposeRegions.invalidate(root);
+            updatePanel();
+          },180);
+        }
         com.carrot.transport.GuidancePlacement.place(root,p,true);
-      }else SignalLayoutGap.setHeight(0);
+      }
     }catch(Throwable e){error(e);}
   }
   public static JSONObject health()throws Exception{long now=SystemClock.elapsedRealtime();Object s=session;return new JSONObject().put("version",1).put("package","com.nhn.android.nmap").put("token",CompanionMode.token).put("mode",s==null?"NONE":name(call(s,"getMode"))).put("main_age_ms",NaverHealth.mainAt==0?-1:now-NaverHealth.mainAt).put("position_age_ms",pointAt==0?-1:now-pointAt);}
