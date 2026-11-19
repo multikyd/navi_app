@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.19.3-arm64",
+  "build": "2026.11.19.4-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 208709744,
-        "sha256": "b8577471e114e60f9fbf27e58766516cfe810553ec0eae442c899e8902107b4a"
+        "bytes": 208706596,
+        "sha256": "d5b0f1c318ea96df1ddf524be12a22fa9d66f43d850d70d6d09f21574b6489b6"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97875991,
-        "sha256": "c9ae0226fad51bbf7eb46c337d40cbda616cdf615eef19ea882641e3dadffc5b",
+        "bytes": 97878397,
+        "sha256": "4d143a42cd23f720c1bb43cb0e13fbc9e1751cbe734a624434428fccbaf736d0",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97875991,
-            "sha256": "c9ae0226fad51bbf7eb46c337d40cbda616cdf615eef19ea882641e3dadffc5b"
+            "bytes": 97878397,
+            "sha256": "4d143a42cd23f720c1bb43cb0e13fbc9e1751cbe734a624434428fccbaf736d0"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111903,
-      "modified_version": "2026.11.19.3",
+      "update_build": 2026111904,
+      "modified_version": "2026.11.19.4",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "kisa: 홈·주행·안심주행 네이버 검색 띄어쓰기 보정과 캠퍼스 학원명 판별 개선"
+      "release_notes": "kisa: 아리아 검색어 전달, 신호 색상과 배치, 합산 방지턱 순정 아이콘"
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234818221,
-        "sha256": "2cd8dd58a7707a0410b7ec22937a896a36b27076def83d43e7c5b45ecdfa4908"
+        "bytes": 234822479,
+        "sha256": "96a4eabad0c7268d1b0a5366b7ee80406a5afacc3b33a7ed86098fd485d8c440"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157962080,
-        "sha256": "0afc31024cfbe6f42370f56f75d7b7dee6ad04a1ccc0fda2ce0cef7347cae99a",
+        "bytes": 157962889,
+        "sha256": "f6b3047f99173402e00c5af064e503758b7096d396c74ff334e492b680e9707f",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "b330457fad79caad5442a130ff860aa30fc0e1a31f7f1b58a7ea0241bf1a98dc"
+            "sha256": "b61117d75c00cb270ec16b28fdef272d0d61cd72027ad1e455d838402816e941"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74076000,
-            "sha256": "84a641012518e4bfa133178dce022c547c7a23360b9f10d6be8caf1520caddfc"
+            "bytes": 74076809,
+            "sha256": "31ff33568e77c56a8b6bd3e5df1c69225482ac85bc556e0997319f06f9d7dbeb"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111903,
-      "modified_version": "2026.11.19.3",
+      "update_build": 2026111904,
+      "modified_version": "2026.11.19.4",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "kisa: 홈·주행·안심주행 네이버 검색 띄어쓰기 보정과 캠퍼스 학원명 판별 개선"
+      "release_notes": "kisa: 아리아 검색어 전달, 신호 색상과 배치, 합산 방지턱 순정 아이콘"
     }
   ],
   "auto_download_wifi": true
