@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.19.4-arm64",
+  "build": "2026.11.19.6-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 208706596,
-        "sha256": "d5b0f1c318ea96df1ddf524be12a22fa9d66f43d850d70d6d09f21574b6489b6"
+        "bytes": 208738448,
+        "sha256": "727c686489286c375f0489df4775582af746d90887dcd81c5cd8f5214f71d4ce"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97878397,
-        "sha256": "4d143a42cd23f720c1bb43cb0e13fbc9e1751cbe734a624434428fccbaf736d0",
+        "bytes": 97879492,
+        "sha256": "fdc2636a7c2ff5bb45754a039d541ee009b05d9fa9073a525f0b2a4c6d507ffa",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97878397,
-            "sha256": "4d143a42cd23f720c1bb43cb0e13fbc9e1751cbe734a624434428fccbaf736d0"
+            "bytes": 97879492,
+            "sha256": "fdc2636a7c2ff5bb45754a039d541ee009b05d9fa9073a525f0b2a4c6d507ffa"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026111904,
-      "modified_version": "2026.11.19.4",
+      "update_build": 2026111906,
+      "modified_version": "2026.11.19.6",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "kisa: 아리아 검색어 전달, 신호 색상과 배치, 합산 방지턱 순정 아이콘"
+      "release_notes": "kisa: 티맵 방지턱 거리 표시, 신호 거리 기준과 앱별 레이아웃 조정, 아리아 검색어 전달"
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234822479,
-        "sha256": "96a4eabad0c7268d1b0a5366b7ee80406a5afacc3b33a7ed86098fd485d8c440"
+        "bytes": 234826575,
+        "sha256": "d42860be82dde4172211459b1e2f644437e8d57281d26d472760eac8f8122d15"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157962889,
-        "sha256": "f6b3047f99173402e00c5af064e503758b7096d396c74ff334e492b680e9707f",
+        "bytes": 157963330,
+        "sha256": "4734fdb3431933451ed360f0d5df1e5355b6d44cc73011f8be62aaf11ad70ebe",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "b61117d75c00cb270ec16b28fdef272d0d61cd72027ad1e455d838402816e941"
+            "sha256": "e22dc1b1ce9a0439967b5303db3f82ecc12010e8e3906ec8d1084dec0b164aa1"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74076809,
-            "sha256": "31ff33568e77c56a8b6bd3e5df1c69225482ac85bc556e0997319f06f9d7dbeb"
+            "bytes": 74077250,
+            "sha256": "9bef8e1a905ec6c8efaad6f35f59d641080e0757316631764afa4efacb3d4dda"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026111904,
-      "modified_version": "2026.11.19.4",
+      "update_build": 2026111906,
+      "modified_version": "2026.11.19.6",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "kisa: 아리아 검색어 전달, 신호 색상과 배치, 합산 방지턱 순정 아이콘"
+      "release_notes": "kisa: 티맵 방지턱 거리 표시, 신호 거리 기준과 앱별 레이아웃 조정, 아리아 검색어 전달"
     }
   ],
   "auto_download_wifi": true
