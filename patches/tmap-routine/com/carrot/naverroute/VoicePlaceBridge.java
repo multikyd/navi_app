@@ -75,7 +75,7 @@ public final class VoicePlaceBridge {
    long id=((Number)action.getClass().getMethod("getInternalId").invoke(action)).longValue();
    if(entry.actionId==id)return;entry.actionId=id;
    // Use what the user said, never the name of Tmap's first suggested result.
-   entry.query=recent();entry.button.setContentDescription("원하는 장소가 없으면 네이버에서 찾기"+(entry.query.isEmpty()?"":" · "+entry.query));
+   String latestQuery=recent();if(!latestQuery.isEmpty())entry.query=latestQuery;entry.button.setContentDescription("원하는 장소가 없으면 네이버에서 찾기"+(entry.query.isEmpty()?"":" · "+entry.query));
    entry.cachedResults=null;entry.button.setText("원하는 장소가 없나요? 네이버에서 찾기");
    lookup(entry,action);
   }catch(Exception e){RouteDiagnostics.event("aria_naver_place_state_failed",e.getClass().getSimpleName());}

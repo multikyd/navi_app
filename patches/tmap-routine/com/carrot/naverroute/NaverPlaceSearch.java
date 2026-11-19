@@ -64,7 +64,21 @@ public final class NaverPlaceSearch {
   return items;
  }
  static JSONArray query(Context context,String query,Request request)throws Exception{return query(context,query,request,searchCenter(context,false),false);}
+ static boolean hasExact(String query,JSONArray results){for(int i=0;i<results.length();i++)if(PlaceMatch.exact(query,results.optJSONObject(i).optString("name")))return true;return false;}
  static JSONArray query(Context context,String query,Request request,Location center,boolean distanceSort)throws Exception{
+  String original=query.trim();JSONArray results=queryOnce(context,original,request,center,distanceSort);
+  int originalCount=results.length();String compact=PlaceMatch.compactKoreanSpaces(original);
+  if(!compact.equals(original)&&!hasExact(original,results)){
+   try{
+    request.check();JSONArray additional=queryOnce(context,compact,request,center,distanceSort);Set<String> seen=new HashSet<>();JSONArray merged=new JSONArray();
+    for(JSONArray set:new JSONArray[]{results,additional})for(int i=0;i<set.length();i++){JSONObject item=set.getJSONObject(i);String key=PlaceMatch.key(item.optString("name"))+":"+item.optString("lon")+":"+item.optString("lat");if(seen.add(key))merged.put(item);}
+    results=merged;RouteDiagnostics.event("naver_place_spacing_retry","original_count="+originalCount+" compact_count="+additional.length()+" exact="+hasExact(original,results));
+   }catch(Exception error){request.check();RouteDiagnostics.event("naver_place_spacing_retry_failed",error.getClass().getSimpleName());}
+  }
+  if(distanceSort){ArrayList<JSONObject> sorted=new ArrayList<>();for(int i=0;i<results.length();i++)sorted.add(results.getJSONObject(i));sorted.sort((a,b)->Double.compare(a.optDouble("distance_m",Double.MAX_VALUE),b.optDouble("distance_m",Double.MAX_VALUE)));JSONArray out=new JSONArray();for(JSONObject item:sorted)out.put(item);return out;}
+  return exactFirst(original,results);
+ }
+ static JSONArray queryOnce(Context context,String query,Request request,Location center,boolean distanceSort)throws Exception{
   query=query.trim();if(query.isEmpty()||query.length()>200)throw new IOException("검색어는 1~200자로 입력해 주세요.");
   String url=searchUrl(query,center,distanceSort);
   Method sign=context.getClassLoader().loadClass("com.naver.map.hmac.Hmac").getDeclaredMethod("nativeGetEncryptUrl",String.class);sign.setAccessible(true);String signed=(String)sign.invoke(null,url);request.check();
