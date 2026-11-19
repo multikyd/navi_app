@@ -27,8 +27,8 @@ public final class NaviAppState {
       if(Build.VERSION.SDK_INT>=28&&!Application.getProcessName().equals(c.getPackageName()))return;
       source=appSource;initialized=true;NaviUpdater.init(c,appSource);SignalDiagnostics.init(c,appSource);GuidanceSwitch.init((Application)c);CompanionHealth.init((Application)c);
       ((Application)c).registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks(){
-        public void onActivityResumed(Activity a){if(!foreground)foregroundSince=SystemClock.elapsedRealtime();foreground=true;NaviUpdater.onResume(a);GuidanceSwitch.resumed(a);SignalPanel.resumed(a);TransientNotice.resumed(a);}
-        public void onActivityPaused(Activity a){foreground=false;NaviUpdater.onPause(a);GuidanceSwitch.paused(a);SignalPanel.paused(a);TransientNotice.paused(a);}
+        public void onActivityResumed(Activity a){if(!foreground)foregroundSince=SystemClock.elapsedRealtime();foreground=true;NaviUpdater.onResume(a);GuidanceSwitch.resumed(a);SignalPanel.resumed(a);com.carrot.naver.MergedBumpMarkers.resume(a);TransientNotice.resumed(a);}
+        public void onActivityPaused(Activity a){foreground=false;NaviUpdater.onPause(a);GuidanceSwitch.paused(a);SignalPanel.paused(a);com.carrot.naver.MergedBumpMarkers.pause(a);TransientNotice.paused(a);}
         public void onActivityCreated(Activity a,Bundle b){}
         public void onActivityStarted(Activity a){}
         public void onActivityStopped(Activity a){}

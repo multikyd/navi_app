@@ -28,6 +28,7 @@ public final class NaverBridge {
   private static volatile long pointAt;
   private static volatile JSONObject latest;
   private static volatile CharSequence panelText="";
+  private static volatile boolean panelHasSignal;
   private static volatile boolean simulation;
   private static volatile boolean showPanel=true;
   private static final Map<String,Peer> peers=new ConcurrentHashMap<>();
@@ -200,6 +201,7 @@ public final class NaverBridge {
         if(display.length()>0)display.append('\n');
         display.append(signalRows);
       }
+      panelHasSignal=signalRows.length()>0;
       panelText=new android.text.SpannedString(display);
       main.post(()->updatePanel());
       if(++packetNumber%10==0)Log.i(TAG,"mode="+name(call(s,"getMode"))+" peers="+peers.size()+" sdi="+rg.optInt("nSdiType")+" signal="+signals.optInt("distance"));
@@ -281,7 +283,7 @@ public final class NaverBridge {
     }catch(Throwable ignored){peer.queue.clear();try{Thread.sleep(1500);}catch(InterruptedException stop){return;}}}
   }
   private static void updatePanel(){
-    try{Activity a=activity.get();if(a==null||a.isFinishing())return;
+    try{Activity a=activity.get();if(a==null||a.isFinishing()){SignalLayoutGap.setHeight(0);return;}
       TextView p=panel.get();if(p==null||p.getContext()!=a){
         if(p!=null&&p.getParent() instanceof ViewGroup)((ViewGroup)p.getParent()).removeView(p);
         p=new TextView(a);p.setTag("kisa-naver-signal");p.setTextSize(16);p.setTextColor(Color.WHITE);p.setPadding(dp(a,10),dp(a,8),dp(a,10),dp(a,8));
@@ -294,7 +296,11 @@ public final class NaverBridge {
       FrameLayout.LayoutParams lp=(FrameLayout.LayoutParams)p.getLayoutParams();
       for(String id:new String[]{"v_second","v_first_bg"}){int resource=com.carrot.transport.GuidancePlacement.id((View)p.getParent(),id);View anchor=resource==0?null:a.findViewById(resource);
         if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0){int[] location=new int[2],container=new int[2];anchor.getLocationOnScreen(location);((View)p.getParent()).getLocationOnScreen(container);lp.topMargin=Math.max(dp(a,12),location[1]+anchor.getHeight()-container[1]+dp(a,8));p.setLayoutParams(lp);break;}}
-      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));com.carrot.transport.GuidancePlacement.place(root,p,true);}
+      if(p.getVisibility()==View.VISIBLE){FrameLayout root=(FrameLayout)p.getParent();p.measure(View.MeasureSpec.makeMeasureSpec(root.getWidth()/2,View.MeasureSpec.AT_MOST),View.MeasureSpec.makeMeasureSpec(root.getHeight()/2,View.MeasureSpec.AT_MOST));boolean reserve=panelHasSignal&&com.carrot.transport.GuidancePlacement.nativeSignal(root)!=null;
+        float gap=reserve?(p.getMeasuredHeight()+dp(a,16))/a.getResources().getDisplayMetrics().density:0;
+        SignalLayoutGap.setHeight(gap);
+        com.carrot.transport.GuidancePlacement.place(root,p,true);
+      }else SignalLayoutGap.setHeight(0);
     }catch(Throwable e){error(e);}
   }
   public static JSONObject health()throws Exception{long now=SystemClock.elapsedRealtime();Object s=session;return new JSONObject().put("version",1).put("package","com.nhn.android.nmap").put("token",CompanionMode.token).put("mode",s==null?"NONE":name(call(s,"getMode"))).put("main_age_ms",NaverHealth.mainAt==0?-1:now-NaverHealth.mainAt).put("position_age_ms",pointAt==0?-1:now-pointAt);}
