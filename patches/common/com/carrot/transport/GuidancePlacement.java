@@ -8,13 +8,13 @@ public final class GuidancePlacement {
  static boolean free(Rect candidate,List<Rect> occupied,int width,int height,int gap){if(candidate.left<gap||candidate.right>width-gap||candidate.top<gap||candidate.bottom>height-gap)return false;for(Rect r:occupied)if(Rect.intersects(candidate,r))return false;return true;}
  static void position(View extra,int x,int y){FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)extra.getLayoutParams();if(p.gravity!=(Gravity.TOP|Gravity.LEFT)||p.leftMargin!=x||p.topMargin!=y){p.gravity=Gravity.TOP|Gravity.LEFT;p.leftMargin=x;p.topMargin=y;extra.setLayoutParams(p);}}
  static void obstacles(View v,View extra,List<Rect> out,int[] origin){if(v==extra||!v.isShown())return;String id="";try{id=v.getResources().getResourceEntryName(v.getId()).toLowerCase(Locale.ROOT);}catch(Exception ignored){}
-  boolean protectedName=id.matches(".*(speed|traffic|signal|lane|tbt|first_bg|second|guide_distance|turn|crossroad).*"),added=v.getTag()!=null&&String.valueOf(v.getTag()).matches(".*(signal|guidance-switch|naver-place).*"),leaf=!(v instanceof ViewGroup);
+  boolean protectedName=id.matches(".*(speed|traffic|signal|lane|tbt|first_bg|second|guide_distance|turn|crossroad|safety|camera|limit_sign).*"),added=v.getTag()!=null&&String.valueOf(v.getTag()).matches(".*(signal|guidance-switch|naver-place).*"),leaf=!(v instanceof ViewGroup);
   boolean largeGroup=!leaf&&v.getWidth()>extra.getRootView().getWidth()*.75&&v.getHeight()>extra.getRootView().getHeight()*.25;
   if((protectedName||added||v.isClickable())&&!largeGroup&&v.getWidth()>0&&v.getHeight()>0&&v.getWidth()*v.getHeight()<extra.getRootView().getWidth()*extra.getRootView().getHeight()*.65){int[] at=new int[2];v.getLocationOnScreen(at);Rect r=new Rect(at[0]-origin[0],at[1]-origin[1],at[0]-origin[0]+v.getWidth(),at[1]-origin[1]+v.getHeight());r.inset(-dp(v,6),-dp(v,6));out.add(r);if(protectedName)return;}
   if(v instanceof ViewGroup)for(int i=0;i<((ViewGroup)v).getChildCount();i++)obstacles(((ViewGroup)v).getChildAt(i),extra,out,origin);
  }
  public static void place(FrameLayout root,View extra,boolean left){if(root.getWidth()==0||root.getHeight()==0)return;int[] origin=new int[2];root.getLocationOnScreen(origin);List<Rect> occupied=new ArrayList<>();obstacles(root,extra,occupied,origin);int gap=dp(root,12),w=extra.getMeasuredWidth(),h=extra.getMeasuredHeight();if(w<=0||h<=0)return;int first=Math.max(dp(root,180),(int)(root.getHeight()*.38));
-  for(ComposeRegions.Region region:ComposeRegions.get(root)){Rect r=region.bounds;if(!(region.clickable||region.description.contains("Text")||region.description.contains("속도")||region.description.contains("km/h"))||r.width()<=0||r.height()<=0||r.width()*r.height()>root.getWidth()*root.getHeight()*.4)continue;Rect padded=new Rect(r);padded.inset(-dp(root,6),-dp(root,6));occupied.add(padded);}
+  for(ComposeRegions.Region region:ComposeRegions.get(root)){Rect r=region.bounds;if(!(region.clickable||region.description.contains("Text")||region.description.contains("속도")||region.description.contains("km/h")||region.description.contains("안전운전")||region.description.contains("카메라")||region.description.contains("단속")||region.description.contains("표지판"))||r.width()<=0||r.height()<=0||r.width()*r.height()>root.getWidth()*root.getHeight()*.4)continue;Rect padded=new Rect(r);padded.inset(-dp(root,6),-dp(root,6));occupied.add(padded);}
   if(String.valueOf(extra.getTag()).contains("signal")){Rect anchor=nativeSignal(root);if(anchor!=null){
    if("kisa-direction-signal".equals(extra.getTag())){
     int top=anchor.bottom+gap;
@@ -24,9 +24,23 @@ public final class GuidancePlacement {
    if("kisa-naver-signal".equals(extra.getTag())){
     int top=anchor.bottom+gap;
     int preferred=Math.max(gap,anchor.left+dp(root,16));
-    for(int x=preferred;x+w<=root.getWidth()-gap;x+=gap){
+    int maxX=Math.min(root.getWidth()-w-gap,preferred+dp(root,48));
+    for(int x=preferred;x<=maxX;x+=gap){
      Rect below=new Rect(x,top,x+w,top+h);
      if(free(below,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,below.left,below.top);return;}
+    }
+    // Move down past the speed and warning area when the close placement is occupied.
+    int lower=top;
+    for(Rect obstacle:occupied){
+     if(obstacle.bottom>top&&obstacle.top<top+dp(root,220)
+         &&obstacle.right>preferred&&obstacle.left<preferred+w){
+      lower=Math.max(lower,obstacle.bottom+gap);
+     }
+    }
+    Rect underWarnings=new Rect(preferred,lower,preferred+w,lower+h);
+    if(free(underWarnings,occupied,root.getWidth(),root.getHeight()-dp(root,130),gap)){
+     position(extra,underWarnings.left,underWarnings.top);
+     return;
     }
    }
    for(int x:new int[]{root.getWidth()-w-gap,anchor.right+gap}){if(x<anchor.right+gap)continue;Rect candidate=new Rect(x,anchor.top,x+w,anchor.top+h);if(free(candidate,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,candidate.left,candidate.top);return;}}}left=false;}
