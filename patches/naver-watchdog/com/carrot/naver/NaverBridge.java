@@ -27,8 +27,7 @@ public final class NaverBridge {
   private static volatile Object lastPoint;
   private static volatile long pointAt;
   private static volatile JSONObject latest;
-  private static volatile String panelText="";
-  private static volatile int panelColor=Color.WHITE;
+  private static volatile CharSequence panelText="";
   private static volatile boolean simulation;
   private static volatile boolean showPanel=true;
   private static final Map<String,Peer> peers=new ConcurrentHashMap<>();
@@ -194,15 +193,15 @@ public final class NaverBridge {
       latest=event;publish(event);
       sendRoute(s,now);
       publish(new JSONObject().put("source","naver-map").put("timestamp_ms",System.currentTimeMillis()).put("simulation",simulation).put("ssinf",signals));
-      StringBuilder display=new StringBuilder();int color=Color.WHITE;
-      if(bump!=null)display.append("방지턱 ").append(bump.optInt("distance")).append(" m").append('\n');
-      if(signals.optInt("distance",-1)>=0){display.append("신호 ").append(signals.optInt("distance")).append(" m");
-        String[] dirs={"straight","left","right","uturn"},labels={"↑","←","→","↶"};for(int i=0;i<dirs.length;i++){
-          String state=signals.optString(dirs[i]);if(state.equals("UNAVAILABLE"))continue;
-          String light=state.equals("RED_LIGHT_ON")?"🔴":state.equals("GREEN_LIGHT_ON")?"🟢":"🟡";
-          display.append('\n').append(labels[i]).append(' ').append(light).append(' ').append(signals.optInt(dirs[i]+"_remain_time")).append("초");}
+      android.text.SpannableStringBuilder display=new android.text.SpannableStringBuilder();
+      if(bump!=null)display.append("방지턱 ").append(String.valueOf(bump.optInt("distance"))).append(" m");
+      CharSequence signalRows=com.carrot.transport.SignalPanel.render(signals,0);
+      if(signalRows.length()>0){
+        if(display.length()>0)display.append('\n');
+        display.append(signalRows);
       }
-      panelText=display.toString().trim();panelColor=color;main.post(()->updatePanel());
+      panelText=new android.text.SpannedString(display);
+      main.post(()->updatePanel());
       if(++packetNumber%10==0)Log.i(TAG,"mode="+name(call(s,"getMode"))+" peers="+peers.size()+" sdi="+rg.optInt("nSdiType")+" signal="+signals.optInt("distance"));
     }catch(Throwable e){panelText="";main.post(()->updatePanel());error(e);}
   }
@@ -291,7 +290,7 @@ public final class NaverBridge {
         FrameLayout.LayoutParams lp=new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT,Gravity.TOP|Gravity.START);lp.leftMargin=dp(a,12);lp.topMargin=dp(a,210);
         content.addView(p,lp);panel=new WeakReference<>(p);
       }
-      p.setText(panelText);p.setTextColor(panelColor);p.setVisibility(!CompanionMode.background()&&showPanel&&!panelText.isEmpty()?View.VISIBLE:View.GONE);p.bringToFront();
+      CharSequence text=panelText;p.setText(text);p.setTextColor(Color.WHITE);p.setVisibility(!CompanionMode.background()&&showPanel&&text.length()>0?View.VISIBLE:View.GONE);p.bringToFront();
       FrameLayout.LayoutParams lp=(FrameLayout.LayoutParams)p.getLayoutParams();
       for(String id:new String[]{"v_second","v_first_bg"}){int resource=com.carrot.transport.GuidancePlacement.id((View)p.getParent(),id);View anchor=resource==0?null:a.findViewById(resource);
         if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0){int[] location=new int[2],container=new int[2];anchor.getLocationOnScreen(location);((View)p.getParent()).getLocationOnScreen(container);lp.topMargin=Math.max(dp(a,12),location[1]+anchor.getHeight()-container[1]+dp(a,8));p.setLayoutParams(lp);break;}}

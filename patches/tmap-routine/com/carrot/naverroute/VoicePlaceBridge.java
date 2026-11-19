@@ -36,7 +36,7 @@ public final class VoicePlaceBridge {
   Selection selected=pendingSelection();
   if(selected!=null&&key.matches("(그래|응|네|예|좋아|맞아|거기로|안내해줘)(요)?")){
    selection=null;suppressNativeUntil=SystemClock.elapsedRealtime()+15000;
-   NaverPlaceSearch.MAIN.post(()->{try{Activity a=selected.activity.get();if(a==null||a.isFinishing()||a.isDestroyed()){suppressNativeUntil=0;return;}a.startActivity(NaverPlaceSearch.destinationIntent(a,selected.place));RouteDiagnostics.event("aria_naver_voice_selected","explicit_selection=true coordinate_destination=true");}catch(Exception e){suppressNativeUntil=0;RouteDiagnostics.event("aria_naver_voice_selection_failed",e.getClass().getSimpleName());}});return;
+   NaverPlaceSearch.MAIN.post(()->{try{Activity a=selected.activity.get();if(a==null||a.isFinishing()||a.isDestroyed()){suppressNativeUntil=0;return;}a.startActivity(NaverPlaceSearch.destinationIntent(a,selected.place));RouteDiagnostics.event("aria_naver_voice_selected","explicit_selection="+selected.explicit+" coordinate_destination=true");}catch(Exception e){suppressNativeUntil=0;RouteDiagnostics.event("aria_naver_voice_selection_failed",e.getClass().getSimpleName());}});return;
   }
   if(selected!=null&&key.matches("아니|아니야|아니요|취소|그만")){NaverPlaceSearch.MAIN.post(VoicePlaceBridge::clearSelection);suppressNativeUntil=0;return;}
   if(panel!=null&&panel.dialog.isShowing()){
@@ -93,6 +93,7 @@ public final class VoicePlaceBridge {
  }
  static void open(Entry entry){
   if(entry.a.isFinishing()||entry.a.isDestroyed())return;
+  if(entry.query.isEmpty())entry.query=recent();
   clearSelection();NaverPlaceSearch.Panel panel=new NaverPlaceSearch.Panel(entry.a,entry.query);
   if(NaverPlaceSearch.searchCenter(entry.a,false)==null&&NaverPlaceSearch.searchCenter(entry.a,true)!=null){panel.myLocation=true;panel.position.setText("내 위치 중심 ▾");}
   voicePanel=panel;

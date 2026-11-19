@@ -1,0 +1,21 @@
+--- a/com/tmapmobility/adot/core/core/sdk/state/AsrResultStateFlow.smali
++++ b/com/tmapmobility/adot/core/core/sdk/state/AsrResultStateFlow.smali
+@@ -237,6 +237,8 @@
+     .line 9
+     .line 10
+     .line 11
++    invoke-static {p1}, Lcom/carrot/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V
++
+     new-instance v1, Lcom/tmapmobility/adot/core/core/sdk/state/a;
+
+     .line 12
+--- a/com/tmapmobility/adot/data/view/model/state/a$b$j.smali
++++ b/com/tmapmobility/adot/data/view/model/state/a$b$j.smali
+@@ -66,7 +66,6 @@
+     .line 3
+     iput-object p1, p0, Lcom/tmapmobility/adot/data/view/model/state/a$b$j;->c:Ljava/lang/String;
+
+-    invoke-static {p1}, Lcom/carrot/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V
+
+     .line 4
+     const-string p1, ""
