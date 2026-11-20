@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "build": "2026.11.20.3-arm64",
+  "build": "2026.11.20.4-arm64",
   "architecture": "arm64-v8a",
   "apps": [
     {
@@ -9,28 +9,28 @@
       "package": "package: name='com.skt.tmap.ku' versionCode='4002' versionName='11.8.2.4051' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
       "apk": {
         "filename": "tmap-c4-arm64.apk",
-        "bytes": 207181688,
-        "sha256": "66faa0b54dc4e74269a6cab14931cfc7ea56af11dd2d3a5a447a940a10aa5989"
+        "bytes": 207244398,
+        "sha256": "7f1790b9cd49367550adceab9a4d9e8730c5669d96c8b923d6cadc2f9b29c875"
       },
       "archive": {
         "format": "zip",
         "filename": "tmap-c4-arm64.zip",
-        "bytes": 97492394,
-        "sha256": "d225f6e07b5474b4f5b9be98a9ba065aafe1c637206279f46f1c6db88343bd5e",
+        "bytes": 97510589,
+        "sha256": "ac945e257068ea23e4d956a4398ac8269b11dcf441cf0fdf4e59d8e93a275113",
         "parts": [
           {
             "path": "packages/tmap-c4-arm64.zip",
-            "bytes": 97492394,
-            "sha256": "d225f6e07b5474b4f5b9be98a9ba065aafe1c637206279f46f1c6db88343bd5e"
+            "bytes": 97510589,
+            "sha256": "ac945e257068ea23e4d956a4398ac8269b11dcf441cf0fdf4e59d8e93a275113"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "fa41c26812744d7177015dd1b15222c9409bd420819cff79155f60a32baef767",
-      "update_build": 2026112003,
-      "modified_version": "2026.11.20.3",
+      "update_build": 2026112004,
+      "modified_version": "2026.11.20.4",
       "package_name": "com.skt.tmap.ku",
-      "release_notes": "Kisa 내비 연동. 티맵과 네이버지도를 함께 업데이트해 주세요."
+      "release_notes": "내비 앱 내부 진단 로그를 정리했습니다."
     },
     {
       "id": "naver-map",
@@ -38,33 +38,33 @@
       "package": "package: name='com.nhn.android.nmap' versionCode='61102001' versionName='6.11.2.2' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'",
       "apk": {
         "filename": "naver-map-c4-arm64.apk",
-        "bytes": 234268448,
-        "sha256": "855c2b74f7025ddd86e2d0f3af7bc616131309a75e193458f758a9995f362207"
+        "bytes": 234826329,
+        "sha256": "4ad76d790feaf658dcec55578f218e1528691c6ef8634561625a9b6d7923b77c"
       },
       "archive": {
         "format": "zip",
         "filename": "naver-map-c4-arm64.zip",
-        "bytes": 157922888,
-        "sha256": "4f80fb60e072a6c1f595702638ff0ee9dfe2f80677157bb78ddedfc483a10f27",
+        "bytes": 157963653,
+        "sha256": "7c63b55a8a775292817fe03ad0cf5318a71a90b89a8fe7754784e417fa881dbe",
         "parts": [
           {
             "path": "packages/naver-map-c4-arm64.zip.part001",
             "bytes": 83886080,
-            "sha256": "ceaaf1fdc1d8b2dc2356bafd8531abdd9ca8c8512b8330afb957608c7472df68"
+            "sha256": "87c69a2609c6e241c05e40ad8bbdefea8ac9b48c51d8d3ddfa60e1c37ad4fb3a"
           },
           {
             "path": "packages/naver-map-c4-arm64.zip.part002",
-            "bytes": 74036808,
-            "sha256": "64457a6a7827c642f90dbbbfccf21c4354a09acbed9c22352339c83e4f3b5566"
+            "bytes": 74077573,
+            "sha256": "384c18d78b0361616dfc575a7d67734186579785a5dd8bf959d8fb507816f195"
           }
         ]
       },
       "certificate_sha256": "0d774b5cb060ac8a7ccb64a6191803336204c3c986e353f7f941c49fa5282d3b",
       "source_apk_sha256": "0e7b87a835666692b3ae867ed227dab6e99bdd20b6dc2f19a4f6dc4a4e9d3ec1",
-      "update_build": 2026112003,
-      "modified_version": "2026.11.20.3",
+      "update_build": 2026112004,
+      "modified_version": "2026.11.20.4",
       "package_name": "com.nhn.android.nmap",
-      "release_notes": "Kisa 내비 연동. 티맵과 네이버지도를 함께 업데이트해 주세요."
+      "release_notes": "내비 앱 내부 진단 로그를 정리했습니다."
     }
   ],
   "auto_download_wifi": true
