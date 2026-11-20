@@ -2,7 +2,7 @@ package com.carrot.transport;
 import android.app.*;import android.content.*;import android.content.pm.PackageManager;import android.os.*;import android.graphics.*;import android.graphics.drawable.GradientDrawable;import android.view.*;import android.widget.*;import java.lang.ref.WeakReference;import java.lang.reflect.*;import java.util.*;
 /** Changes the audio/overlay owner of an existing dual trip, without recreating either route. */
 public final class GuidanceSwitch {
- static final String TMAP="com.skt.tmap.ku",NAVER="com.nhn.android.nmap",ACTION="com.kisa.navi.SWITCH_OWNER";
+ static final String TMAP="com.skt.tmap.ku",NAVER="com.nhn.android.nmap",ACTION="com.kisa.navi.SWITCH_OWNER",RECOVER="com.kisa.navi.RECOVER_TMAP";
  static final Handler MAIN=new Handler(Looper.getMainLooper());static Application app;static boolean tmap;static WeakReference<Activity> screen=new WeakReference<>(null);static WeakReference<ImageButton> button=new WeakReference<>(null);static boolean pending;
  static Object backend(String method,Class<?>[] types,Object...args)throws Exception{Class<?> type=app.getClassLoader().loadClass(tmap?"com.carrot.naverroute.DualNavigation":"com.carrot.naver.CompanionMode");return type.getMethod(method,types).invoke(null,args);}
  static String token(){try{return (String)backend("switchToken",new Class<?>[]{});}catch(Exception e){return "";}}
@@ -11,11 +11,16 @@ public final class GuidanceSwitch {
  public static synchronized void init(Application application){if(app!=null||Build.VERSION.SDK_INT<34)return;app=application;tmap=TMAP.equals(app.getPackageName());
   app.registerReceiver(new BroadcastReceiver(){public void onReceive(Context c,Intent intent){String sender=getSentFromPackage(),peer=tmap?NAVER:TMAP;
    if(!peer.equals(sender)||getSentFromUid()<0||app.getPackageManager().checkSignatures(android.os.Process.myUid(),getSentFromUid())!=PackageManager.SIGNATURE_MATCH)return;
+   if(RECOVER.equals(intent.getAction())){
+    if(tmap)try{if(Boolean.TRUE.equals(backend("recoverTmap",new Class<?>[]{Context.class,String.class},app,intent.getStringExtra("trip"))))setResultCode(Activity.RESULT_OK);}catch(Exception e){android.util.Log.w("KisaNaviSwitch","Recovery request failed",e);}
+    return;
+   }
    String expected=token(),requested=intent.getStringExtra("owner");if(expected.isEmpty()||!expected.equals(intent.getStringExtra("trip"))||!Objects.equals(owner(),intent.getStringExtra("previous")))return;
    if(setOwner(requested))setResultCode(Activity.RESULT_OK);
-  }},new IntentFilter(ACTION),Context.RECEIVER_EXPORTED);
+  }},switchActions(),Context.RECEIVER_EXPORTED);
   MAIN.post(TICK);
  }
+ static IntentFilter switchActions(){IntentFilter filter=new IntentFilter(ACTION);filter.addAction(RECOVER);return filter;}
  public static void resumed(Activity activity){if(app==null)return;screen=new WeakReference<>(activity);update();}
  public static void paused(Activity activity){if(screen.get()==activity){screen.clear();ImageButton b=button.get();if(b!=null)b.setVisibility(View.GONE);}}
  static int dp(Context c,int n){return (int)(n*c.getResources().getDisplayMetrics().density+.5f);}
@@ -30,10 +35,28 @@ public final class GuidanceSwitch {
  }
  public static ImageButton createButton(Activity a){ImageButton b=new ImageButton(a);b.setTag("kisa-guidance-switch");b.setScaleType(ImageView.ScaleType.FIT_CENTER);b.setElevation(dp(a,2));b.setContentDescription(tmap?"네이버로 전환":"티맵으로 전환");b.setTooltipText(tmap?"네이버로 전환":"티맵으로 전환");try{b.setImageDrawable(app.getPackageManager().getApplicationIcon(tmap?NAVER:TMAP));}catch(Exception ignored){b.setImageResource(android.R.drawable.ic_menu_directions);}GradientDrawable bg=new GradientDrawable();bg.setColor(tmap?0xe66e757b:0xf0111111);bg.setShape(GradientDrawable.OVAL);b.setBackground(new android.graphics.drawable.InsetDrawable(new android.graphics.drawable.RippleDrawable(android.content.res.ColorStateList.valueOf(0x55ffffff),bg,null),dp(a,2)));b.setBackgroundTintList(null);b.setPadding(dp(a,10),dp(a,10),dp(a,10),dp(a,10));return b;}
  static void request(Activity a){if(pending)return;String trip=token(),before=owner(),next=tmap?"naver":"tmap";if(trip.isEmpty()||before.isEmpty())return;String peer=tmap?NAVER:TMAP;Intent launch=app.getPackageManager().getLaunchIntentForPackage(peer);if(launch==null){Toast.makeText(a,"전환할 내비 앱을 찾지 못했습니다.",Toast.LENGTH_SHORT).show();return;}
-  pending=true;update();Intent request=new Intent(ACTION).setPackage(peer).putExtra("trip",trip).putExtra("owner",next).putExtra("previous",before);
-  // The OS shares sender identity; the receiving app checks the package and APK signer.
-  app.sendOrderedBroadcast(request,null,BroadcastOptions.makeBasic().setShareIdentityEnabled(true).toBundle(),new BroadcastReceiver(){public void onReceive(Context c,Intent result){pending=false;if(!trip.equals(token())){update();return;}if(getResultCode()==Activity.RESULT_OK&&setOwner(next)){launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);app.startActivity(launch);android.util.Log.i("KisaNaviSwitch","owner="+next+" routes_preserved=true");}else Toast.makeText(a,"두 앱의 안내가 연결된 상태에서 전환할 수 있습니다.",Toast.LENGTH_SHORT).show();update();}},MAIN,Activity.RESULT_CANCELED,null,null);
+  pending=true;update();exchange(peer,trip,before,next,accepted->{
+   if(!trip.equals(token())){finish();return;}
+   if(accepted&&setOwner(next)){open(a,launch);android.util.Log.i("KisaNaviSwitch","owner="+next+" routes_preserved=true");finish();return;}
+   if(!accepted)GuidanceRecovery.check(a,launch,peer,trip,before,next);
+   else failed(a,"현재 안내 연결을 확인해 주세요.");
+  });
  }
+ interface Reply{void received(boolean accepted);}
+ static void exchange(String peer,String trip,String before,String next,Reply reply){
+  send(new Intent(ACTION).setPackage(peer).putExtra("trip",trip).putExtra("owner",next).putExtra("previous",before),reply);
+ }
+ static void send(Intent intent,Reply reply){
+  app.sendOrderedBroadcast(intent,null,BroadcastOptions.makeBasic().setShareIdentityEnabled(true).toBundle(),new BroadcastReceiver(){
+   public void onReceive(Context c,Intent result){reply.received(getResultCode()==Activity.RESULT_OK);}
+  },MAIN,Activity.RESULT_CANCELED,null,null);
+ }
+ static boolean open(Activity a,Intent intent){
+  try{a.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));return true;}
+  catch(RuntimeException e){android.util.Log.w("KisaNaviSwitch","Could not open navigation",e);return false;}
+ }
+ static void finish(){pending=false;update();}
+ static void failed(Activity a,String message){Toast.makeText(a,message,Toast.LENGTH_SHORT).show();finish();}
  static final Runnable TICK=new Runnable(){public void run(){try{update();}catch(Exception e){android.util.Log.w("KisaNaviSwitch","UI update failed",e);}MAIN.postDelayed(this,500);}};
  private GuidanceSwitch(){}
 }

@@ -18,6 +18,21 @@ public final class GuidancePlacement {
   return best==null?null:best.centerX();
  }
  static void position(View extra,int x,int y){FrameLayout.LayoutParams p=(FrameLayout.LayoutParams)extra.getLayoutParams();if(p.gravity!=(Gravity.TOP|Gravity.LEFT)||p.leftMargin!=x||p.topMargin!=y){p.gravity=Gravity.TOP|Gravity.LEFT;p.leftMargin=x;p.topMargin=y;extra.setLayoutParams(p);}}
+ static boolean aboveTmapProgress(FrameLayout root,View extra,List<Rect> occupied,int[] origin,int gap,int width,int height){
+  if(!root.getContext().getPackageName().equals("com.skt.tmap.ku"))return false;
+  View track=root.findViewById(id(root,"progress_container"));
+  if(track==null||!track.isShown()||track.getWidth()==0||track.getHeight()==0)return false;
+  int[] at=new int[2];track.getLocationOnScreen(at);
+  int center=at[0]-origin[0]+track.getWidth()/2;
+  if(center<root.getWidth()/2)return false;
+  int x=Math.min(root.getWidth()-width,center-width/2);
+  int top=at[1]-origin[1]-gap-height;
+  for(int y=top;y>=dp(root,64);y-=dp(root,8)){
+   Rect candidate=new Rect(x,y,x+width,y+height);
+   if(free(candidate,occupied,root.getWidth(),root.getHeight(),0)){position(extra,x,y);return true;}
+  }
+  return false;
+ }
  static void obstacles(View v,View extra,List<Rect> out,int[] origin){if(v==extra||!v.isShown())return;String id="";try{id=v.getResources().getResourceEntryName(v.getId()).toLowerCase(Locale.ROOT);}catch(Exception ignored){}
   boolean protectedName=id.matches(".*(speed|traffic|signal|lane|tbt|first_bg|second|guide_distance|turn|crossroad|safety|camera|limit_sign).*"),added=v.getTag()!=null&&String.valueOf(v.getTag()).matches(".*(signal|guidance-switch|naver-place).*"),leaf=!(v instanceof ViewGroup);
   boolean largeGroup=!leaf&&v.getWidth()>extra.getRootView().getWidth()*.75&&v.getHeight()>extra.getRootView().getHeight()*.25;
@@ -26,8 +41,9 @@ public final class GuidancePlacement {
  }
  public static void place(FrameLayout root,View extra,boolean left){if(root.getWidth()==0||root.getHeight()==0)return;int[] origin=new int[2];root.getLocationOnScreen(origin);List<Rect> occupied=new ArrayList<>();obstacles(root,extra,occupied,origin);int gap=dp(root,12),w=extra.getMeasuredWidth(),h=extra.getMeasuredHeight();if(w<=0||h<=0)return;int first=Math.max(dp(root,180),(int)(root.getHeight()*.38));
   for(ComposeRegions.Region region:ComposeRegions.get(root)){Rect r=region.bounds;if(!(region.clickable||region.description.contains("Text")||region.description.contains("속도")||region.description.contains("km/h")||region.description.contains("안전운전")||region.description.contains("카메라")||region.description.contains("단속")||region.description.contains("표지판"))||r.width()<=0||r.height()<=0||r.width()*r.height()>root.getWidth()*root.getHeight()*.4)continue;Rect padded=new Rect(r);padded.inset(-dp(root,6),-dp(root,6));occupied.add(padded);}
+  boolean assistancePanel="kisa-direction-signal".equals(extra.getTag())||"kisa-naver-signal".equals(extra.getTag());
   if(String.valueOf(extra.getTag()).contains("signal")){Rect anchor=nativeSignal(root);if(anchor!=null){
-   if("kisa-direction-signal".equals(extra.getTag())||"kisa-naver-signal".equals(extra.getTag())){
+   if(assistancePanel){
     int x=Math.max(0,anchor.left);
     for(int top=anchor.bottom+gap;top<=anchor.bottom+gap*3;top+=gap){
      Rect below=new Rect(x,top,x+w,top+h);
@@ -36,12 +52,13 @@ public final class GuidancePlacement {
     extra.setVisibility(View.GONE);
     return;
    }
-   for(int x:new int[]{root.getWidth()-w-gap,anchor.right+gap}){if(x<anchor.right+gap)continue;Rect candidate=new Rect(x,anchor.top,x+w,anchor.top+h);if(free(candidate,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,candidate.left,candidate.top);return;}}}left="kisa-naver-signal".equals(extra.getTag());}
+   for(int x:new int[]{root.getWidth()-w-gap,anchor.right+gap}){if(x<anchor.right+gap)continue;Rect candidate=new Rect(x,anchor.top,x+w,anchor.top+h);if(free(candidate,occupied,root.getWidth(),root.getHeight(),gap)){position(extra,candidate.left,candidate.top);return;}}}}
   if(String.valueOf(extra.getTag()).contains("signal")){first=dp(root,180);for(int id:new int[]{id(root,"v_second"),id(root,"v_first_bg"),0x7f0a0fb0,0x7f0a06ce}){View anchor=id==0?null:root.findViewById(id);if(anchor!=null&&anchor.isShown()&&anchor.getHeight()>0&&anchor.getHeight()<root.getHeight()/2){int[] pos=new int[2];anchor.getLocationOnScreen(pos);first=pos[1]+anchor.getHeight()-origin[1]+gap;break;}}}
   boolean guidanceSwitch="kisa-guidance-switch".equals(extra.getTag());
-  int sides=guidanceSwitch||"kisa-naver-signal".equals(extra.getTag())?1:2;
+  if(guidanceSwitch&&aboveTmapProgress(root,extra,occupied,origin,gap,w,h))return;
+  int sides=guidanceSwitch||assistancePanel?1:2;
   for(int side=0;side<sides;side++){
-   boolean atLeft=!guidanceSwitch&&(side==0?left:!left);
+   boolean atLeft=assistancePanel||!guidanceSwitch&&(side==0?left:!left);
    int x=atLeft?gap:root.getWidth()-w-gap;
    if(guidanceSwitch){
     int searchId=id(root,"search_button");View search=searchId==0?null:root.findViewById(searchId);
