@@ -1,4 +1,4 @@
-package com.carrot.tmaprouteprobe;
+package com.kisa.tmaprouteprobe;
 import android.app.*;import android.content.*;import android.database.Cursor;import android.net.Uri;import android.os.*;import android.provider.MediaStore;import org.json.*;import java.io.*;import java.lang.reflect.*;import java.nio.file.Files;import java.security.*;
 
 public class KisaDownloadsRunner extends Instrumentation {
@@ -7,7 +7,7 @@ public class KisaDownloadsRunner extends Instrumentation {
  static String hash(File f)throws Exception{MessageDigest md=MessageDigest.getInstance("SHA-256");try(InputStream in=new FileInputStream(f)){byte[] b=new byte[65536];int n;while((n=in.read(b))!=-1)md.update(b,0,n);}StringBuilder out=new StringBuilder();for(byte b:md.digest())out.append(String.format(java.util.Locale.ROOT,"%02x",b&255));return out.toString();}
  public void onStart(){JSONObject report=new JSONObject();Bundle answer=new Bundle();try{
   Context c=getTargetContext();String source=c.getPackageName().equals("com.skt.tmap.ku")?"tmap":"naver-map";ClassLoader cl=c.getClassLoader();
-  Class<?> updater=cl.loadClass("com.carrot.transport.NaviUpdater"),store=cl.loadClass("com.kisa.update.DownloadStore");long build=updater.getField("BUILD").getLong(null);check(build==2026111702L,"Unexpected installed build");
+  Class<?> updater=cl.loadClass("com.kisa.transport.NaviUpdater"),store=cl.loadClass("com.kisa.update.DownloadStore");long build=updater.getField("BUILD").getLong(null);check(build==2026111702L,"Unexpected installed build");
   updater.getMethod("init",Context.class,String.class).invoke(null,c,source);
   File apk=new File(c.getApplicationInfo().sourceDir);String sha=hash(apk);
   Method verify=updater.getDeclaredMethod("verifyPackage",File.class);verify.setAccessible(true);verify.invoke(null,apk);

@@ -1,4 +1,4 @@
-"""Package verified build_current.py outputs and generate the phone update catalog.
+"""Package verified navigation APKs and generate the phone update catalog.
 
 Run from any directory with --checks pointing to the verified builder report.
 The compiled NaviUpdater.BUILD and this report's update_build must match.
@@ -42,7 +42,8 @@ def main():
     inputs = {}
     for report in reports:
         apk = Path(report['apk']).resolve(strict=True)
-        app = next((app for app in PACKAGES if apk.name == app + '-c4-arm64-updater.apk'), None)
+        app = next((app for app in PACKAGES
+                    if apk.name in (app + '-c4-arm64-updater.apk', app + '-kisa.apk')), None)
         if app is None or app in inputs:
             raise ValueError('Unexpected or duplicate APK')
         if (report['sha256'] != sha(apk) or report['bytes'] != apk.stat().st_size or

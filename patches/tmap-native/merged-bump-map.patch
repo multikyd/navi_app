@@ -1,7 +1,7 @@
 --- a/com/skt/tmap/engine/navigation/NavigationManager.smali
 +++ b/com/skt/tmap/engine/navigation/NavigationManager.smali
 @@ -3048,0 +3049,6 @@
-+    invoke-static {p1, p0}, Lcom/carrot/navermerge/NaverBumpBridge;->mapSupplement(Lcom/skt/tmap/engine/navigation/data/RGData;Ljava/lang/Object;)Ljava/lang/Object;
++    invoke-static {p1, p0}, Lcom/kisa/navermerge/NaverBumpBridge;->mapSupplement(Lcom/skt/tmap/engine/navigation/data/RGData;Ljava/lang/Object;)Ljava/lang/Object;
 +
 +    move-result-object p0
 +

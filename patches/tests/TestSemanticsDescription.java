@@ -1,4 +1,4 @@
-import com.carrot.transport.SemanticsDescription;
+import com.kisa.transport.SemanticsDescription;
 import java.util.*;
 public final class TestSemanticsDescription {
   static final class Poison {

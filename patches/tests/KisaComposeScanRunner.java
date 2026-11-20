@@ -1,4 +1,4 @@
-package com.carrot.tmaprouteprobe;
+package com.kisa.tmaprouteprobe;
 import android.app.*;
 import android.content.*;
 import android.os.*;
@@ -27,7 +27,7 @@ public final class KisaComposeScanRunner extends Instrumentation {
     startActivitySync(c.getPackageManager().getLaunchIntentForPackage(c.getPackageName()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     Activity a=waitForMonitorWithTimeout(monitor,10000);
     if(a==null)a=monitor.getLastActivity();if(a==null)throw new Exception("Main activity not available");
-    final Activity screen=a;Class<?> regions=c.getClassLoader().loadClass("com.carrot.transport.ComposeRegions");
+    final Activity screen=a;Class<?> regions=c.getClassLoader().loadClass("com.kisa.transport.ComposeRegions");
     Method get=regions.getMethod("get",View.class);int[] max={0},described={0};Throwable[] failure={null};
     for(int n=0;n<20;n++){
       Thread.sleep(1000);runOnMainSync(()->{try{

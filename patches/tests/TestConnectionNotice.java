@@ -1,4 +1,4 @@
-import com.carrot.transport.ConnectionNoticePolicy;
+import com.kisa.transport.ConnectionNoticePolicy;
 public final class TestConnectionNotice {
  static void check(boolean b,String s){if(!b)throw new AssertionError(s);}
  public static void main(String[] args){ConnectionNoticePolicy p=new ConnectionNoticePolicy();check(p.update("trip","disconnected",100),"first failure must notify");check(p.visible(5000)&&!p.visible(5100),"five second expiry");for(int n=6000;n<20000;n+=1000)check(!p.update("trip","still disconnected",n),"same outage repeated");p.dismiss();check(!p.visible(6000),"dismiss not applied");p.update("trip","",21000);p.update("trip","",23000);check(!p.update("trip","disconnected",23500),"transient recovery repeated warning");p.update("trip","",25000);p.update("trip","",29000);check(p.update("trip","disconnected",30000),"stable reconnect must rearm");check(p.update("new-trip","disconnected",31000),"new trip must be independent");System.out.println("PASS first outage, 5s expiry, dismissal, no repeated warning, recovery debounce, new trip");}

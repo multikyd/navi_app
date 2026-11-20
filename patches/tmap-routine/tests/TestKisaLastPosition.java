@@ -1,6 +1,6 @@
 import com.kisa.routine.LastPositionPolicy;
-import com.carrot.naverroute.RoutinePositionPolicy;
-import com.carrot.naverroute.RoutineModel;
+import com.kisa.naverroute.RoutinePositionPolicy;
+import com.kisa.naverroute.RoutineModel;
 import java.util.*;
 
 public final class TestKisaLastPosition {

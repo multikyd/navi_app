@@ -2,7 +2,7 @@
 +++ b/com/naver/map/feature/navigation/renewal/rg/compose/RouteGuidancePlacements.smali
 @@ -575,0 +576,6 @@
 +
-+    invoke-static {v0}, Lcom/carrot/naver/SignalLayoutGap;->shiftSafety(Ljava/lang/Object;)Ljava/lang/Object;
++    invoke-static {v0}, Lcom/kisa/naver/SignalLayoutGap;->shiftSafety(Ljava/lang/Object;)Ljava/lang/Object;
 +
 +    move-result-object v0
 +
@@ -10,7 +10,7 @@
 --- a/com/naver/map/feature/navigation/renewal/rg/compose/SafeDrivingPlacements.smali
 +++ b/com/naver/map/feature/navigation/renewal/rg/compose/SafeDrivingPlacements.smali
 @@ -681,0 +682,6 @@
-+    invoke-static {v0}, Lcom/carrot/naver/SignalLayoutGap;->shiftSafety(Ljava/lang/Object;)Ljava/lang/Object;
++    invoke-static {v0}, Lcom/kisa/naver/SignalLayoutGap;->shiftSafety(Ljava/lang/Object;)Ljava/lang/Object;
 +
 +    move-result-object v0
 +
@@ -20,9 +20,9 @@
 +++ b/com/naver/map/feature/navigation/renewal/rg/NaviRouteGuidanceFragment.smali
 @@ -952,0 +953,2 @@
 +
-+    invoke-static {v3}, Lcom/carrot/naver/MergedBumpMarkers;->attachNaverMap(Ljava/lang/Object;)V
++    invoke-static {v3}, Lcom/kisa/naver/MergedBumpMarkers;->attachNaverMap(Ljava/lang/Object;)V
 --- a/com/naver/map/feature/navigation/renewal/rg/NaviSafeDrivingFragment.smali
 +++ b/com/naver/map/feature/navigation/renewal/rg/NaviSafeDrivingFragment.smali
 @@ -718,0 +719,2 @@
 +
-+    invoke-static {v3}, Lcom/carrot/naver/MergedBumpMarkers;->attachNaverMap(Ljava/lang/Object;)V
++    invoke-static {v3}, Lcom/kisa/naver/MergedBumpMarkers;->attachNaverMap(Ljava/lang/Object;)V

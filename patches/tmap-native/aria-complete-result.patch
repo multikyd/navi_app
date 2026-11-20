@@ -1,9 +1,9 @@
 --- a/com/tmapmobility/adot/core/core/sdk/state/AsrResultStateFlow.smali
 +++ b/com/tmapmobility/adot/core/core/sdk/state/AsrResultStateFlow.smali
 @@ -239,0 +240,2 @@
-+    invoke-static {p1}, Lcom/carrot/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V
++    invoke-static {p1}, Lcom/kisa/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V
 +
 --- a/com/tmapmobility/adot/data/view/model/state/a$b$j.smali
 +++ b/com/tmapmobility/adot/data/view/model/state/a$b$j.smali
 @@ -69 +68,0 @@
--    invoke-static {p1}, Lcom/carrot/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V
+-    invoke-static {p1}, Lcom/kisa/naverroute/VoicePlaceBridge;->heard(Ljava/lang/String;)V

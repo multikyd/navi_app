@@ -1,4 +1,4 @@
-package com.carrot.tmaprouteprobe;
+package com.kisa.tmaprouteprobe;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -25,7 +25,7 @@ public final class KisaNaverSafetyLayoutRunner extends Instrumentation {
           if (ctor.getParameterCount() == 9) sample = ctor.newInstance(true, align, null, null, null, null, true, 124, null);
         }
         if (sample == null) throw new AssertionError("Slot fixture missing");
-        Class<?> gap = cl.loadClass("com.carrot.naver.SignalLayoutGap");
+        Class<?> gap = cl.loadClass("com.kisa.naver.SignalLayoutGap");
         Method set = gap.getDeclaredMethod("setHeight", float.class);
         set.setAccessible(true);
         Method padding = slot.getMethod("n");

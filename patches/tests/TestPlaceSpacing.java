@@ -1,4 +1,4 @@
-import com.carrot.naverroute.PlaceMatch;
+import com.kisa.naverroute.PlaceMatch;
 public final class TestPlaceSpacing {
  public static void main(String[] args){
   for(String q:new String[]{"수학의힘 신검단캠퍼스","수학의 힘 신 검단캠퍼스","수학의힘신검단캠퍼스","수학의 힘 신 검단캠퍼스 학원"}){

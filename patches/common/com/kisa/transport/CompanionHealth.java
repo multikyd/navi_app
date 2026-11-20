@@ -1,0 +1,13 @@
+package com.kisa.transport;
+import android.app.*;import android.os.*;import org.json.*;import java.net.*;import java.io.*;import java.util.concurrent.*;
+/** Tmap-side read-only Naver watchdog. GPS delay is distinct from an unresponsive app. */
+public final class CompanionHealth {
+ static Application app;static String trip="";static long started,lastSeen;
+ public static synchronized void init(Application a){if(app!=null||!a.getPackageName().equals("com.skt.tmap.ku"))return;app=a;ScheduledExecutorService timer=Executors.newSingleThreadScheduledExecutor(r->{Thread t=new Thread(r,"KisaNaverHealth");t.setDaemon(true);return t;});timer.scheduleWithFixedDelay(CompanionHealth::poll,1500,2000,TimeUnit.MILLISECONDS);}
+ static void poll(){try{JSONObject own=(JSONObject)app.getClassLoader().loadClass("com.kisa.naverroute.RecordingHealth").getMethod("snapshot").invoke(null);String key=own.optString("token");if(!own.optString("status").equals("active")||key.isEmpty()){trip="";TransientNotice.update(app,"","");return;}long now=SystemClock.elapsedRealtime();if(!key.equals(trip)){trip=key;started=lastSeen=now;}String message="",state="healthy";
+  try(Socket socket=new Socket()){socket.connect(new InetSocketAddress("127.0.0.1",18319),500);socket.setSoTimeout(500);ByteArrayOutputStream bytes=new ByteArrayOutputStream();int ch;while((ch=socket.getInputStream().read())!=-1&&ch!='\n'){if(bytes.size()>8192)throw new IOException("health size");bytes.write(ch);}JSONObject peer=new JSONObject(bytes.toString("UTF-8"));if(!peer.optString("package").equals("com.nhn.android.nmap")||!trip.equals(peer.optString("token")))throw new IOException("different trip");lastSeen=now;if(now-started>=15000){if(peer.optLong("main_age_ms",-1)<0||peer.optLong("main_age_ms")>10000){state="unresponsive";message="네이버 응답 지연 · 앱 상태를 확인해 주세요";}else if(!peer.optString("mode").equals("RouteGuiding")){state="guidance_stopped";message="네이버 안내 중단 · 앱 상태를 확인해 주세요";}else if(peer.optLong("position_age_ms",-1)<0||peer.optLong("position_age_ms")>15000){state="position_delayed";message="네이버 위치 갱신 지연 · GPS를 확인해 주세요";}}}
+  catch(Exception e){if(now-lastSeen>=10000&&now-started>=15000){state="disconnected";message="네이버 연결 끊김 · 현재 안내는 유지됩니다";}}
+  TransientNotice.update(app,trip,message);File dir=app.getExternalFilesDir(null);if(dir!=null)java.nio.file.Files.write(new File(dir,"kisa_companion_health.json").toPath(),new JSONObject().put("timestamp_ms",System.currentTimeMillis()).put("peer","naver-map").put("state",state).put("last_response_age_ms",now-lastSeen).toString().getBytes("UTF-8"));
+ }catch(Exception ignored){}}
+ private CompanionHealth(){}
+}

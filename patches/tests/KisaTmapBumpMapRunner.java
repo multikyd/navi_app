@@ -1,4 +1,4 @@
-package com.carrot.tmaprouteprobe;
+package com.kisa.tmaprouteprobe;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -15,7 +15,7 @@ public final class KisaTmapBumpMapRunner extends Instrumentation {
     try {
       ClassLoader cl = getTargetContext().getClassLoader();
       String engine = "com.skt.tmap.engine.navigation.";
-      String helper = "com.carrot.navermerge.";
+      String helper = "com.kisa.navermerge.";
       Class<?> data = cl.loadClass(engine + "data.RGData");
       Object rg = data.getConstructor().newInstance();
       data.getField("vpPosPointLat").set(rg, 37.6);

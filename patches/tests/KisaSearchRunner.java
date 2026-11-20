@@ -1,4 +1,4 @@
-package com.carrot.tmaprouteprobe;
+package com.kisa.tmaprouteprobe;
 import android.app.*;import android.content.*;import android.os.*;import android.view.*;import android.widget.*;import java.io.*;import java.lang.reflect.*;import java.nio.file.*;import java.util.*;import org.json.*;
 /** Exercises the real safe-drive host and native Compose/Aria fragments, without fake GPS. */
 public final class KisaSearchRunner extends Instrumentation {
@@ -14,9 +14,9 @@ public final class KisaSearchRunner extends Instrumentation {
 
  void startRoute(Context c)throws Exception{
   JSONObject goal=new JSONObject().put("name","수학의힘 신검단캠퍼스학원").put("lat",37.6034634).put("lon",126.6981604);
-  Method destination=cl.loadClass("com.carrot.naverroute.NaverPlaceSearch").getDeclaredMethod("destinationIntent",Context.class,JSONObject.class);destination.setAccessible(true);
+  Method destination=cl.loadClass("com.kisa.naverroute.NaverPlaceSearch").getDeclaredMethod("destinationIntent",Context.class,JSONObject.class);destination.setAccessible(true);
   Activity preview=startActivitySync(((Intent)destination.invoke(null,c,goal)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-  Object vm=call(preview,"p0",new Class<?>[]{}),counter=get(vm,"u0"),session=null,card=null;Class<?> bridge=cl.loadClass("com.carrot.naverroute.PreviewBridge");long until=SystemClock.elapsedRealtime()+45000;
+  Object vm=call(preview,"p0",new Class<?>[]{}),counter=get(vm,"u0"),session=null,card=null;Class<?> bridge=cl.loadClass("com.kisa.naverroute.PreviewBridge");long until=SystemClock.elapsedRealtime()+45000;
   while(SystemClock.elapsedRealtime()<until){final Object ctr=counter;main(()->ctr.getClass().getMethod("setValue",Object.class).invoke(ctr,false));session=((Map<?,?>)get(bridge,"SESSIONS")).get(vm);if(session!=null&&Boolean.TRUE.equals(get(session,"choiceDone"))){for(Object item:(List<?>)call(get(vm,"j0"),"getValue",new Class<?>[]{}))if("Traffic_Recommend".equals(String.valueOf(call(item,"getRoutePlanType",new Class<?>[]{}))))card=item;if(card!=null)break;}Thread.sleep(200);}
   check(card!=null,"Native route not ready");Object fragment=((java.lang.ref.Reference<?>)get(session,"fragment")).get();Class<?> callback=cl.loadClass("com.skt.tmap.mvp.fragment.TmapRoutePreviewFragment$e");Object cb=callback.getConstructor(fragment.getClass()).newInstance(fragment);
   List<?> ordered=(List<?>)call(get(get(vm,"k0"),"Z"),"getValue",new Class<?>[]{});int index=-1;for(int i=0;i<ordered.size();i++)if(call(ordered.get(i),"getRoutePlanType",new Class<?>[]{})==call(card,"getRoutePlanType",new Class<?>[]{}))index=i;
@@ -80,8 +80,8 @@ public final class KisaSearchRunner extends Instrumentation {
  public void onCreate(Bundle b){super.onCreate(b);hostMode=b.getString("host","safe");start();}
  public void onStart(){Bundle result=new Bundle();try{
   Context context=getTargetContext();cl=context.getClassLoader();dir=new File(context.getExternalFilesDir(null),"kisa_search_probe");dir.mkdirs();ActivityMonitor homeMonitor=addMonitor("com.skt.tmap.activity.TmapNewMainActivity",null,false);startActivitySync(context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));Thread.sleep(2500);home=homeMonitor.getLastActivity();if(home==null)home=waitForMonitorWithTimeout(homeMonitor,5000);check(home!=null,"Home missing");
-  main(()->cl.loadClass("com.carrot.naverroute.HomeIdleBridge").getMethod("pause",Activity.class).invoke(null,home));if(hostMode.equals("home")){navi=home;}else if(hostMode.equals("route")){startRoute(context);}else{ActivityMonitor navMonitor=addMonitor("com.skt.tmap.activity.TmapNaviActivity",null,false);main(()->{View safety=home.findViewById(home.getResources().getIdentifier("button_safety_driving","id",home.getPackageName()));check(safety!=null,"Native safe drive button missing");safety.performClick();});navi=waitForMonitorWithTimeout(navMonitor,7000);check(navi!=null,"Native navigation host missing");Thread.sleep(1000);}report.put("host",hostMode);
-  Class<?> voice=cl.loadClass("com.carrot.naverroute.VoicePlaceBridge");main(()->completeSpeech("수학의 힘 신 검단캠퍼스"));addFragment("com.tmapmobility.adot.ui.view.fragment.AdotSelectPlaceFragment");View footer=tag(navi.findViewById(android.R.id.content),"carrot-voice-place-search");check(footer!=null&&footer.isShown(),"Aria footer missing in navigation window");report.put("native_asr_completion_callback",true);
+  main(()->cl.loadClass("com.kisa.naverroute.HomeIdleBridge").getMethod("pause",Activity.class).invoke(null,home));if(hostMode.equals("home")){navi=home;}else if(hostMode.equals("route")){startRoute(context);}else{ActivityMonitor navMonitor=addMonitor("com.skt.tmap.activity.TmapNaviActivity",null,false);main(()->{View safety=home.findViewById(home.getResources().getIdentifier("button_safety_driving","id",home.getPackageName()));check(safety!=null,"Native safe drive button missing");safety.performClick();});navi=waitForMonitorWithTimeout(navMonitor,7000);check(navi!=null,"Native navigation host missing");Thread.sleep(1000);}report.put("host",hostMode);
+  Class<?> voice=cl.loadClass("com.kisa.naverroute.VoicePlaceBridge");main(()->completeSpeech("수학의 힘 신 검단캠퍼스"));addFragment("com.tmapmobility.adot.ui.view.fragment.AdotSelectPlaceFragment");View footer=tag(navi.findViewById(android.R.id.content),"kisa-voice-place-search");check(footer!=null&&footer.isShown(),"Aria footer missing in navigation window");report.put("native_asr_completion_callback",true);
   Object entry=((Map<?,?>)get(voice,"entries")).get(fragment);
   View list=(View)get(entry,"list"),area=(View)get(entry,"footer");
   int[] listAt=new int[2],buttonAt=new int[2];
