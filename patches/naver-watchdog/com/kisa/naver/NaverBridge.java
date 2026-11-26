@@ -54,7 +54,7 @@ public final class NaverBridge {
         if(!cfg.exists()) Files.write(cfg.toPath(),"{\"version\":1,\"show_panel\":true,\"targets\":[]}".getBytes(StandardCharsets.UTF_8));
       }
       app.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks(){
-        public void onActivityResumed(Activity a){CompanionMode.intent(a);activity=new WeakReference<>(a);SignalLayoutGap.configure(a);RecordingWatchdog.resumed(a);}
+        public void onActivityResumed(Activity a){CompanionMode.intent(a);activity=new WeakReference<>(a);SignalLayoutGap.configure(a);RecordingWatchdog.resumed(a);DestinationSuggestions.refresh(a);}
         public void onActivityPaused(Activity a){RecordingWatchdog.paused(a);if(activity.get()==a){activity.clear();TextView p=panel.get();if(p!=null)p.setVisibility(View.GONE);}}
         public void onActivityCreated(Activity a,Bundle b){CompanionMode.intent(a);}
         public void onActivityStarted(Activity a){}
@@ -70,6 +70,8 @@ public final class NaverBridge {
   }
   public static void onSession(Object value) {
     try {boolean changed=session!=value;if(changed){sentRoute=null;}session=value;
+      CompanionMode.guidance(value);
+      if(changed)main.post(()->DestinationSuggestions.refresh(activity.get()));
       Object point=call(value,"getGuidePoint");if(changed||point!=lastPoint){lastPoint=point;pointAt=point==null?0:SystemClock.elapsedRealtime();}
     }catch(Throwable error){error(error);}
   }
@@ -78,7 +80,7 @@ public final class NaverBridge {
     try {if(session==value){lastPoint=call(value,"getGuidePoint");pointAt=SystemClock.elapsedRealtime();}}catch(Throwable error){error(error);}
   }
   public static void onStop(Object value) {
-    try {if(session==value){SpeedTrace.session(false);session=null;pointAt=0;panelText="";sentRoute=null;publish(new JSONObject().put("source","naver-map").put("timestamp_ms",System.currentTimeMillis()).put("route",new JSONArray()));main.post(()->updatePanel());}}catch(Throwable error){error(error);}
+    try {if(session==value){SpeedTrace.session(false);session=null;CompanionMode.stopped(value);pointAt=0;panelText="";sentRoute=null;publish(new JSONObject().put("source","naver-map").put("timestamp_ms",System.currentTimeMillis()).put("route",new JSONArray()));main.post(()->{updatePanel();DestinationSuggestions.refresh(activity.get());});}}catch(Throwable error){error(error);}
   }
   private static Object call(Object value,String name,Object...args) throws Exception {
     if(value==null)return null;

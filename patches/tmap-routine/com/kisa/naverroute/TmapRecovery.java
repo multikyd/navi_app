@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import com.kisa.transport.GuidanceSwitch;
 
 /** Rebuilds an interrupted native route from the private checkpoint for that trip. */
 final class TmapRecovery {
@@ -27,6 +28,8 @@ final class TmapRecovery {
     final long expires = SystemClock.elapsedRealtime() + ATTEMPT_MS;
     Activity preview;
     boolean submitted;
+    boolean peer, validating, tmapWins;
+    double naverSeconds;
 
     Attempt(String trip, JSONObject route) {
       this.trip = trip;
@@ -36,15 +39,17 @@ final class TmapRecovery {
 
   static void save(Context context, String trip, Object option) {
     try {
-      JSONObject goal = point(RouteRequest.get(option, "getDestination"));
-      JSONArray vias = new JSONArray();
-      for (Object via : (List<?>) RouteRequest.get(option, "getWayPoints")) vias.put(point(via));
-      JSONObject saved = new JSONObject().put("trip", trip).put("time", System.currentTimeMillis())
-          .put("goal", goal).put("vias", vias);
+      JSONObject saved = describe(option).put("trip", trip).put("time", System.currentTimeMillis());
       context.getSharedPreferences("kisa_interrupted_route", 0).edit().putString("route", saved.toString()).apply();
     } catch (Exception error) {
       Log.w("KisaNaviSwitch", "Could not save native recovery route", error);
     }
+  }
+
+  static JSONObject describe(Object option) throws Exception {
+    JSONArray vias = new JSONArray();
+    for (Object via : (List<?>) RouteRequest.get(option, "getWayPoints")) vias.put(point(via));
+    return new JSONObject().put("goal", point(RouteRequest.get(option, "getDestination"))).put("vias", vias);
   }
 
   private static JSONObject point(Object waypoint) throws Exception {
@@ -63,8 +68,29 @@ final class TmapRecovery {
     long age = System.currentTimeMillis() - route.getLong("time");
     if (!trip.equals(route.getString("trip")) || age < 0 || age > MAX_AGE_MS) return false;
     Attempt attempt = new Attempt(trip, route);
+    Intent intent = prepare(context, attempt);
+    try {
+      context.startActivity(intent);
+    } catch (RuntimeException error) {
+      active = null;
+      throw error;
+    }
+    return true;
+  }
+
+  static Intent peerPreview(Context context, String trip, String route, double seconds) throws Exception {
+    if (trip == null || trip.isEmpty() || route == null || route.length() > 8192) return null;
+    Attempt attempt = new Attempt(trip, new JSONObject(route));
+    attempt.peer = true;
+    attempt.naverSeconds = seconds;
+    return prepare(context, attempt);
+  }
+
+  private static Intent prepare(Context context, Attempt attempt) throws Exception {
+    JSONObject route = attempt.route;
     Intent intent = NaverPlaceSearch.destinationIntent(context, route.getJSONObject("goal"));
     JSONArray vias = route.getJSONArray("vias");
+    if (vias.length() > 5) throw new IllegalArgumentException("At most five waypoints");
     ArrayList<Serializable> points = new ArrayList<>();
     for (int i = 0; i < vias.length(); i++) {
       Intent via = NaverPlaceSearch.destinationIntent(context, vias.getJSONObject(i));
@@ -73,14 +99,8 @@ final class TmapRecovery {
     intent.putExtra("via_list", points);
     intent.putExtra(EXTRA, attempt.marker);
     active = attempt;
-    try {
-      context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-    } catch (RuntimeException error) {
-      active = null;
-      throw error;
-    }
     RouteRequest.MAIN.postDelayed(() -> expire(attempt), ATTEMPT_MS);
-    return true;
+    return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
   }
 
   static boolean owns(PreviewBridge.Session session) throws Exception {
@@ -104,7 +124,19 @@ final class TmapRecovery {
     RoutineBridge.pauseCounter(model);
     if (attempt.submitted || !attempt.preview.hasWindowFocus()) return true;
     Object plan = RouteRequest.get(PreviewBridge.field(model, "T"), "getValue");
-    for (Object card : (List<?>) RouteRequest.get(PreviewBridge.field(model, "j0"), "getValue")) {
+    List<?> cards = (List<?>) RouteRequest.get(PreviewBridge.field(model, "j0"), "getValue");
+    if (attempt.peer && !"Traffic_Recommend".equals(String.valueOf(plan))) {
+      for (int i = 0; i < cards.size(); i++) {
+        Object card = cards.get(i);
+        Object recommendation = RouteRequest.get(card, "getRoutePlanType");
+        if (!"Traffic_Recommend".equals(String.valueOf(recommendation))) continue;
+        if (RouteRequest.get(card, "getRouteResult") == null) return true;
+        model.getClass().getMethod("C5", session.planClass).invoke(model, recommendation);
+        model.getClass().getMethod("t5", int.class, boolean.class).invoke(model, i, true);
+        return true;
+      }
+    }
+    for (Object card : cards) {
       if (plan != RouteRequest.get(card, "getRoutePlanType")) continue;
       Object route = RouteRequest.get(card, "getRouteResult");
       if (route == null || !matches(attempt, route)) return true;
@@ -112,12 +144,28 @@ final class TmapRecovery {
       View start = preview.findViewById(preview.getResources().getIdentifier(
           "route_preview_drive_button", "id", preview.getPackageName()));
       if (start != null && start.isShown() && start.isEnabled() && start.hasOnClickListeners()) {
-        attempt.submitted = true;
-        if (!start.performClick()) attempt.submitted = false;
+        if (!attempt.peer) {
+          start(attempt, start);
+        } else if (!attempt.validating) {
+          attempt.validating = true;
+          long seconds = PreviewBridge.Session.seconds(route);
+          attempt.tmapWins = attempt.naverSeconds < 0 || (seconds > 0 && attempt.naverSeconds > seconds);
+          GuidanceSwitch.verifyPeer(attempt.trip, attempt.route.toString(), accepted -> {
+            attempt.validating = false;
+            if (active != attempt) return;
+            if (!accepted) expire(attempt);
+            else if (preview.hasWindowFocus()) start(attempt, start);
+          });
+        }
       }
       break;
     }
     return true;
+  }
+
+  private static void start(Attempt attempt, View button) {
+    attempt.submitted = true;
+    if (!button.performClick()) attempt.submitted = false;
   }
 
   private static boolean matches(Attempt attempt, Object route) throws Exception {
@@ -151,6 +199,7 @@ final class TmapRecovery {
     DualNavigation.armed = null;
     RecordingHealth.start(attempt.trip);
     active = null;
+    if (attempt.peer) GuidanceSwitch.completeNaverHandoff(attempt.trip, attempt.tmapWins);
     RouteDiagnostics.event("dual_native_guidance_recovered", "owner=naver until switch is acknowledged");
     return true;
   }

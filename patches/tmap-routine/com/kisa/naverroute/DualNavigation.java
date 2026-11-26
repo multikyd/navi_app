@@ -18,13 +18,27 @@ public final class DualNavigation {
  public static String owner(){return running?"naver":backgroundRunning?"tmap":"";}
  public static String guidanceOwner(){return owner();}
  public static String switchToken(){return (running||backgroundRunning)&&"active".equals(RecordingHealth.status)?RecordingHealth.token:"";}
+ public static JSONObject activeRoute()throws Exception{
+  if(switchToken().isEmpty())return null;
+  Object manager=NaverRuntime.manager();
+  if(!"REAL_DRIVE".equals(String.valueOf(get(manager,"getDriveMode"))))return null;
+  return TmapRecovery.describe(get(get(manager,"getRouteResult"),"getRouteOption"));
+ }
+ public static Intent peerPreview(Context c,String token,String route,double naverSeconds)throws Exception{
+  NaverRuntime.init(c);
+  return TmapRecovery.peerPreview(c,token,route,naverSeconds);
+ }
+ static void checkDestination(Object manager)throws Exception{
+  if((running||backgroundRunning)&&"REAL_DRIVE".equals(String.valueOf(get(manager,"getDriveMode")))
+      &&!trip.equals(key(get(manager,"getRouteResult"))))onStarted(manager);
+ }
  public static boolean setGuidanceOwner(String next){if(switchToken().isEmpty()||!("tmap".equals(next)||"naver".equals(next)))return false;running="naver".equals(next);backgroundRunning=!running;RouteDiagnostics.event("dual_owner_switched","owner="+next+" native_route_preserved=true");return true;}
  public static boolean mute(){if(running)return true;try{return armedNaver&&armed!=null&&!"SIMULATION_DRIVE".equals(String.valueOf(get(NaverRuntime.manager(),"getDriveMode")));}catch(Exception e){return false;}}
  static boolean matches(Object result)throws Exception{return result!=null&&armed!=null&&key(result).equals(key(armed))&&Arrays.equals((byte[])get(result,"getBinaryData"),(byte[])get(armed,"getBinaryData"));}
  static String name(Object waypoint){try{Object value=get(waypoint,"getName");return value==null?"":value.toString();}catch(Exception e){return "";}}
  public static Intent intent(Object option,boolean autoStart)throws Exception{return intentForOwner(option,autoStart,"naver");}
  public static Intent naverRecoveryIntent(String token)throws Exception{
-  if(!token.equals(switchToken())||!"tmap".equals(owner()))return null;
+  if(!token.equals(switchToken()))return null;
   Object manager=NaverRuntime.manager();
   if(!"REAL_DRIVE".equals(String.valueOf(get(manager,"getDriveMode"))))return null;
   return intentForOwner(get(get(manager,"getRouteResult"),"getRouteOption"),true,"tmap");
@@ -45,10 +59,12 @@ public final class DualNavigation {
   if(!"REAL_DRIVE".equals(mode)){running=false;backgroundRunning=false;armed=null;return;}
   if(TmapRecovery.adopt(route))return;
   if((running||backgroundRunning)&&trip.equals(key(route)))return;
-  running=false;backgroundRunning=false;if(!matches(route))return;Object selected=armed;boolean naverOwner=armedNaver;Context app=context;long epoch=selection;trip=key(route);running=naverOwner;backgroundRunning=!naverOwner;RecordingHealth.start();
+  boolean selected=matches(route);boolean naverOwner=selected&&armedNaver;
+  armed=null;Context app=RecordingHealth.context;long epoch=++selection;
+  trip=key(route);running=naverOwner;backgroundRunning=!naverOwner;RecordingHealth.start();
   TmapRecovery.save(app,RecordingHealth.token,get(route,"getRouteOption"));
   RouteDiagnostics.event("dual_native_guidance_started","native_binary_unchanged=true session_present="+!String.valueOf(get(route,"getSessionId")).isEmpty());
-  RouteRequest.MAIN.postDelayed(()->{if((!running&&!backgroundRunning)||selection!=epoch)return;try{if(!trip.equals(key(get(manager,"getRouteResult"))))return;app.startActivity(intentForOwner(get(selected,"getRouteOption"),true,naverOwner?"naver":"tmap"));armed=null;RouteDiagnostics.event("dual_naver_app_opened","coordinate_navigation=true owner="+(naverOwner?"naver":"tmap"));}catch(Exception e){RecordingHealth.stop();running=false;backgroundRunning=false;armed=null;Toast.makeText(app,"네이버 지도를 열지 못했습니다. 앱 설치 상태를 확인해 주세요.",Toast.LENGTH_LONG).show();RouteDiagnostics.event("dual_naver_app_open_failed",e.toString());}},1000);
+  RouteRequest.MAIN.postDelayed(()->{if((!running&&!backgroundRunning)||selection!=epoch)return;try{if(!trip.equals(key(get(manager,"getRouteResult"))))return;app.startActivity(intentForOwner(get(route,"getRouteOption"),true,naverOwner?"naver":"tmap"));RouteDiagnostics.event("dual_naver_app_opened","coordinate_navigation=true owner="+(naverOwner?"naver":"tmap"));}catch(Exception e){running=false;backgroundRunning=true;Toast.makeText(app,"네이버 지도를 열지 못했습니다. 앱 설치 상태를 확인해 주세요.",Toast.LENGTH_LONG).show();RouteDiagnostics.event("dual_naver_app_open_failed",e.toString());}},1000);
  }catch(Exception e){running=false;backgroundRunning=false;RouteDiagnostics.event("dual_start_failed",e.toString());}}
  public static void stop(){RecordingHealth.stop();running=false;backgroundRunning=false;armed=null;selection++;trip="";}
  private DualNavigation(){}
